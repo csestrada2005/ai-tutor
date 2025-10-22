@@ -29,14 +29,11 @@ const Index = () => {
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
-                Your Lectures, Now an{" "}
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse">
-                  AI Tutor
-                </span>
+                <span className="text-primary">A TETR Way</span> to Study
               </h1>
               
               <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-                Stop scrubbing through hours of recordings. Professor AI Tutor automatically transforms your TETR lecture recordings into an intelligent, personalized study companion.
+                Stop scrubbing through hours of recordings. A TETR Way to Study automatically transforms your lecture recordings into an intelligent, personalized AI tutor.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -227,13 +224,13 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2 text-2xl font-bold">
               <GraduationCap className="w-8 h-8 text-primary" />
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Professor AI Tutor
+              <span className="text-primary font-bold">
+                A TETR Way to Study
               </span>
             </div>
             
             <p className="text-muted-foreground text-center">
-              © 2025 Professor AI Tutor. Built for TETR College of Business students.
+              © 2025 A TETR Way to Study. Built for TETR College of Business students.
             </p>
           </div>
         </div>
