@@ -10,21 +10,26 @@ import { Link } from "react-router-dom";
 type Message = { role: "user" | "assistant"; content: string };
 
 const SUBJECTS = [
-  "Computer Science",
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "History",
-  "Literature",
-  "Economics",
+  "AIML101 How do machines see, hear or speak",
+  "PRTC301 How to use statistics to build a better business",
+  "PRTC201 How to get comfortable with excel",
+  "FIFI101 How to understand basic financial terminology",
+  "LA101 How to decode global trends and navigate economic transformations",
+  "MAST102 How to read market for better decision making",
+  "SAMA101 How to identify gaps in the market",
+  "SAMA401 How to execute digital marketing on Meta",
+  "SAMA502 How to execute CRO and increase AOV",
+  "MAST401 How to validate, shape, and launch a startup",
+  "COMM101 How to own a stage",
+  "DRP101 How to build a dropshipping business",
+  "MAST601 How to network effortlessly",
 ];
 
 const PERSONAS = {
-  "Socratic": "Ask probing questions to guide students to discover answers themselves",
-  "Practical": "Focus on real-world applications and hands-on examples",
-  "Detailed": "Provide comprehensive explanations with step-by-step breakdowns",
-  "Encouraging": "Supportive and motivating, celebrating progress and effort",
+  "Study": "Help students learn and understand concepts through clear explanations and examples",
+  "Quiz Maker": "Create quiz questions and practice problems to test understanding",
+  "Professor": "Provide detailed academic explanations with theoretical depth",
+  "Summary Creator": "Distill information into concise, easy-to-understand summaries",
 };
 
 export const ChatInterface = () => {
@@ -32,7 +37,7 @@ export const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string>("");
-  const [selectedPersona, setSelectedPersona] = useState<string>("Practical");
+  const [selectedPersona, setSelectedPersona] = useState<string>("Study");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
