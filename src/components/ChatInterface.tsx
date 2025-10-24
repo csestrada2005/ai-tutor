@@ -2,12 +2,29 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { ChatMessage } from "./ChatMessage";
-import { Loader2, Send, BookOpen, ArrowLeft } from "lucide-react";
+import { Loader2, Send, BookOpen, ArrowLeft, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
-type Message = { role: "user" | "assistant"; content: string };
+type Source = {
+  content: string;
+  metadata?: {
+    class_name?: string;
+    section?: string;
+    title?: string;
+    source_url?: string;
+  };
+  similarity?: number;
+};
+
+type Message = { 
+  role: "user" | "assistant"; 
+  content: string; 
+  sources?: Source[];
+};
 
 const SUBJECTS = [
   "AIML101 How do machines see, hear or speak",
@@ -38,6 +55,7 @@ export const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [selectedPersona, setSelectedPersona] = useState<string>("Study");
+  const [useRAG, setUseRAG] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -73,6 +91,7 @@ export const ChatInterface = () => {
         messages: [...messages, { role: "user", content: userMessage }],
         selectedClass,
         persona: PERSONAS[selectedPersona as keyof typeof PERSONAS],
+        useRAG,
       }),
     });
 
@@ -89,6 +108,7 @@ export const ChatInterface = () => {
     let textBuffer = "";
     let streamDone = false;
     let assistantContent = "";
+    let sources: Source[] = [];
 
     while (!streamDone) {
       const { done, value } = await reader.read();
@@ -112,6 +132,13 @@ export const ChatInterface = () => {
 
         try {
           const parsed = JSON.parse(jsonStr);
+          
+          // Check for sources in the first chunk
+          if (parsed.choices?.[0]?.delta?.sources) {
+            const sourcesData = JSON.parse(parsed.choices[0].delta.sources);
+            sources = sourcesData.sources || [];
+          }
+          
           const content = parsed.choices?.[0]?.delta?.content as string | undefined;
           if (content) {
             assistantContent += content;
@@ -119,10 +146,10 @@ export const ChatInterface = () => {
               const last = prev[prev.length - 1];
               if (last?.role === "assistant") {
                 return prev.map((m, i) =>
-                  i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                  i === prev.length - 1 ? { ...m, content: assistantContent, sources } : m
                 );
               }
-              return [...prev, { role: "assistant", content: assistantContent }];
+              return [...prev, { role: "assistant", content: assistantContent, sources }];
             });
           }
         } catch {
@@ -206,6 +233,17 @@ export const ChatInterface = () => {
               </SelectContent>
             </Select>
           </div>
+          <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+            <Database className="w-4 h-4 text-muted-foreground" />
+            <Label htmlFor="rag-mode" className="flex-1 text-sm cursor-pointer">
+              Use Course Materials (RAG)
+            </Label>
+            <Switch 
+              id="rag-mode" 
+              checked={useRAG} 
+              onCheckedChange={setUseRAG}
+            />
+          </div>
         </div>
       </div>
 
@@ -219,7 +257,14 @@ export const ChatInterface = () => {
               <p className="text-sm">Select a subject and ask your first question to get started!</p>
             </div>
           ) : (
-            messages.map((msg, idx) => <ChatMessage key={idx} role={msg.role} content={msg.content} />)
+            messages.map((msg, idx) => (
+              <ChatMessage 
+                key={idx} 
+                role={msg.role} 
+                content={msg.content}
+                sources={msg.sources}
+              />
+            ))
           )}
           {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="flex items-center gap-2 text-muted-foreground">

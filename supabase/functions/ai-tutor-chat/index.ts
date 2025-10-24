@@ -9,9 +9,48 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, selectedClass, persona } = await req.json();
+    const { messages, selectedClass, persona, useRAG = true } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+    
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    let courseContext = "";
+    let sources: any[] = [];
+
+    // Fetch relevant course materials if RAG is enabled
+    if (useRAG && messages.length > 0) {
+      const lastUserMessage = messages[messages.length - 1];
+      if (lastUserMessage.role === "user") {
+        try {
+          const ragResponse = await fetch(`${SUPABASE_URL}/functions/v1/rag-search`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: lastUserMessage.content,
+              selectedClass: selectedClass,
+            }),
+          });
+
+          if (ragResponse.ok) {
+            const ragData = await ragResponse.json();
+            if (ragData.documents && ragData.documents.length > 0) {
+              sources = ragData.documents;
+              courseContext = "\n\nRelevant course materials:\n" +
+                ragData.documents.map((doc: any, idx: number) => 
+                  `[${idx + 1}] ${doc.metadata?.title || 'Document'} (${doc.metadata?.class_name || ''})\n${doc.content}`
+                ).join("\n\n");
+            }
+          }
+        } catch (e) {
+          console.error("RAG search failed:", e);
+        }
+      }
+    }
 
     // Build system prompt based on class and persona
     const systemPrompt = `You are an AI tutor for ${selectedClass || "general studies"}. ${
@@ -23,11 +62,12 @@ Your role:
 - Provide clear, educational explanations
 - Break down complex topics into digestible parts
 - Encourage critical thinking
-- When relevant, cite sources or explain your reasoning
+${useRAG ? "- When using course materials, reference them by their number [1], [2], etc." : ""}
+${courseContext ? courseContext : ""}
 
 Keep responses focused, educational, and conversational.`;
 
-    console.log("AI Tutor request:", { selectedClass, persona, messageCount: messages.length });
+    console.log("AI Tutor request:", { selectedClass, persona, messageCount: messages.length, useRAG, sourcesFound: sources.length });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -63,6 +103,35 @@ Keep responses focused, educational, and conversational.`;
       return new Response(JSON.stringify({ error: "AI gateway error" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // If we have sources, prepend them to the stream
+    if (sources.length > 0) {
+      const encoder = new TextEncoder();
+      const sourcesData = JSON.stringify({ sources });
+      const sourcesEvent = `data: ${JSON.stringify({ 
+        choices: [{ delta: { content: "", sources: sourcesData } }] 
+      })}\n\n`;
+      
+      const combinedStream = new ReadableStream({
+        async start(controller) {
+          // Send sources first
+          controller.enqueue(encoder.encode(sourcesEvent));
+          
+          // Then pipe the AI response
+          const reader = response.body!.getReader();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+          controller.close();
+        }
+      });
+
+      return new Response(combinedStream, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
       });
     }
 
