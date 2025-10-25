@@ -26,7 +26,7 @@ const Index = () => {
             <div className="space-y-8 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 animate-pulse">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Now Live & Ready to Transform Your Learning</span>
+                <span className="text-sm font-semibold text-primary">Only for TETR Students</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
@@ -49,25 +49,16 @@ const Index = () => {
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-                <Link to="/demo">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="text-lg px-10 py-7 border-2 border-primary/40 hover:bg-primary/5 transition-all hover:scale-105 font-semibold"
-                  >
-                    Try Live Demo
-                  </Button>
-                </Link>
               </div>
               
-              <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-4 pt-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   <span>Free to Start</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span>No Credit Card Required</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/20 border border-accent/40 w-fit">
+                  <Zap className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-semibold text-accent">Limited Time: Available until January 31st</span>
                 </div>
               </div>
             </div>
@@ -137,20 +128,6 @@ const Index = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             <FeatureCard
-              icon={Download}
-              title="Automated Transcript Harvesting"
-              description="The agent automatically logs into your university portal and downloads all your class transcripts. Zero manual work required."
-              benefit="Save hours of manual work and never miss a lecture"
-            />
-            
-            <FeatureCard
-              icon={Sparkles}
-              title="AI-Powered Cleaning & Refining"
-              description="Advanced AI models like Google's Gemini transform messy raw text into perfectly structured, readable study notes."
-              benefit="Get crystal-clear, accurate materials to study from"
-            />
-            
-            <FeatureCard
               icon={MessageCircle}
               title="Intelligent Q&A Chatbot"
               description="Ask anything about your lectures. The AI has processed all content and gives instant, accurate answers with sources."
@@ -158,16 +135,9 @@ const Index = () => {
             />
             
             <FeatureCard
-              icon={Users}
-              title="Professor Personas"
-              description="The AI adopts the personality and teaching style of your actual professor for each specific course."
-              benefit="A familiar, personalized learning experience"
-            />
-            
-            <FeatureCard
               icon={Database}
               title="Centralized Knowledge Hub"
-              description="All course materials are processed and stored in a vector database, creating a powerful searchable knowledge base."
+              description="All course materials are processed and stored in a searchable knowledge base from your actual lectures."
               benefit="Your ultimate study partner for the entire semester"
             />
             
@@ -181,39 +151,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-[var(--gradient-subtle)]">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              How It Works
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Three simple steps to transform your learning experience
-            </p>
-          </div>
-          
-          <div className="grid lg:grid-cols-3 gap-16 max-w-6xl mx-auto relative">
-            <StepCard
-              number="1"
-              title="Harvest"
-              description="The agent logs into your university portal and automatically gathers all available lecture recording transcripts."
-            />
-            
-            <StepCard
-              number="2"
-              title="Refine"
-              description="Raw text is cleaned, formatted, and enriched using our AI pipeline, then stored as intelligent, searchable data."
-            />
-            
-            <StepCard
-              number="3"
-              title="Chat"
-              description="Interact with your AI Tutor through a simple chat interface to ask questions, get summaries, and clarify concepts from any lecture."
-            />
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 relative overflow-hidden">
@@ -223,7 +160,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 mb-4">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-sm font-semibold text-primary">Live & Ready for TETR Students</span>
+              <span className="text-sm font-semibold text-primary">Only for TETR Students</span>
             </div>
             <h2 className="text-4xl lg:text-6xl font-bold text-foreground">
               Start Learning Smarter Today
