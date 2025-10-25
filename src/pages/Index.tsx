@@ -24,45 +24,61 @@ const Index = () => {
         <div className="relative container mx-auto px-6 py-20 lg:py-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-primary/20">
-                <Zap className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-secondary-foreground">Powered by Advanced AI</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 animate-pulse">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-primary">Now Live & Ready to Transform Your Learning</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
-                <span className="text-primary">A TETR Way</span> to Study
+                Your Lectures,
+                <br />
+                <span className="text-primary bg-clip-text">Instantly Searchable</span>
               </h1>
               
               <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-                Stop scrubbing through hours of recordings. A TETR Way to Study automatically transforms your lecture recordings into an intelligent, personalized AI tutor.
+                Transform hours of lecture recordings into an AI tutor that knows everything from your classes. Ask questions, get summaries, and study smarter—all powered by your actual course content.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/demo">
                   <Button 
                     size="lg" 
-                    className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-[var(--shadow-soft)]"
+                    className="text-lg px-10 py-7 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-semibold"
                   >
-                    See a Live Demo
+                    Start Learning Now
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-lg px-8 py-6 border-2"
-                >
-                  Get Early Access
-                </Button>
+                <Link to="/demo">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="text-lg px-10 py-7 border-2 border-primary/40 hover:bg-primary/5 transition-all hover:scale-105 font-semibold"
+                  >
+                    Try Live Demo
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span>Free to Start</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span>No Credit Card Required</span>
+                </div>
               </div>
             </div>
             
-            <div className="relative animate-fade-in-delay">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
+            <div className="relative animate-fade-in-delay group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-primary/10 rounded-3xl blur-3xl group-hover:blur-2xl transition-all" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent rounded-2xl" />
               <img 
                 src={heroBanner} 
                 alt="AI Tutor Interface" 
-                className="relative rounded-2xl shadow-2xl w-full"
+                className="relative rounded-2xl shadow-2xl w-full border border-primary/20 transition-transform group-hover:scale-[1.02]"
               />
             </div>
           </div>
@@ -73,23 +89,30 @@ const Index = () => {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <span className="text-sm font-semibold text-primary">Built for TETR Students</span>
+            </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Study Smarter, Not Harder
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We understand the challenges TETR students face. Here's what we solve:
+              We understand the challenges you face. Here's how we help:
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
-              "Watching hours of recordings to find one topic wastes precious time",
-              "Messy transcripts are impossible to study from effectively",
-              "Reviewing entire lectures for quick clarifications is inefficient",
-              "Tracking information across multiple classes is overwhelming"
-            ].map((pain, index) => (
-              <div key={index} className="bg-card rounded-xl p-6 border border-destructive/20 shadow-sm">
-                <p className="text-foreground leading-relaxed">"{pain}"</p>
+              { pain: "Hours wasted scrubbing through recordings", solved: "Instant answers from your AI tutor" },
+              { pain: "Messy transcripts impossible to study from", solved: "Clean, organized course materials" },
+              { pain: "Can't remember everything from lectures", solved: "Your entire semester in one chatbot" },
+              { pain: "Studying alone with no help", solved: "24/7 AI teaching assistant" }
+            ].map((item, index) => (
+              <div key={index} className="bg-card rounded-xl p-6 border border-primary/10 shadow-sm hover:shadow-[var(--shadow-soft)] hover:border-primary/30 transition-all group">
+                <p className="text-muted-foreground leading-relaxed mb-3 line-through text-sm">"{item.pain}"</p>
+                <p className="text-primary font-semibold flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                  <ArrowRight className="w-4 h-4" />
+                  {item.solved}
+                </p>
               </div>
             ))}
           </div>
@@ -100,11 +123,15 @@ const Index = () => {
       <section className="py-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Powered by Advanced AI</span>
+            </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Intelligent Features, Real Benefits
+              Everything You Need to Excel
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Powered by cutting-edge AI to revolutionize how you learn
+              Your complete AI-powered learning platform
             </p>
           </div>
           
@@ -194,31 +221,32 @@ const Index = () => {
         
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 mb-4">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-sm font-semibold text-primary">Live & Ready for TETR Students</span>
+            </div>
             <h2 className="text-4xl lg:text-6xl font-bold text-foreground">
-              Ready to Transform Your Learning?
+              Start Learning Smarter Today
             </h2>
-            <p className="text-xl text-muted-foreground">
-              Join the future of education. Get instant access to your lectures, personalized to your learning style.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Your AI tutor is ready. No setup required, no credit card needed. Jump straight into your course materials and start asking questions.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <Link to="/demo">
                 <Button 
                   size="lg" 
-                  className="text-lg px-10 py-7 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-[var(--shadow-hover)]"
+                  className="text-lg px-12 py-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-bold text-xl"
                 >
-                  See a Live Demo
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  Launch AI Tutor
+                  <ArrowRight className="ml-3 w-6 h-6" />
                 </Button>
               </Link>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-lg px-10 py-7 border-2"
-              >
-                Get Early Access
-              </Button>
             </div>
+            
+            <p className="text-sm text-muted-foreground pt-4">
+              ✓ Free to start  •  ✓ All TETR courses available  •  ✓ Instant access
+            </p>
           </div>
         </div>
       </section>
