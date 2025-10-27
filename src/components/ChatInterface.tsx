@@ -188,7 +188,7 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-full bg-background">
       {/* Header with controls */}
       <div className="border-b bg-card p-4">
         <div className="max-w-4xl mx-auto space-y-4">
@@ -200,7 +200,7 @@ export const ChatInterface = () => {
                 </Button>
               </Link>
               <BookOpen className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-bold">TETR AI Tutor Demo</h1>
+              <h1 className="text-2xl font-bold">A TETR Way to Study</h1>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
