@@ -11,6 +11,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -23,26 +24,44 @@ const Auth = () => {
     });
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/demo`,
+          },
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Welcome back!",
-        description: "Successfully logged in.",
-      });
-      navigate("/demo");
+        toast({
+          title: "Account created!",
+          description: "You can now sign in with your credentials.",
+        });
+        setIsSignUp(false);
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Welcome back!",
+          description: "Successfully logged in.",
+        });
+        navigate("/demo");
+      }
     } catch (error: any) {
       toast({
-        title: "Login failed",
+        title: isSignUp ? "Sign up failed" : "Login failed",
         description: error.message,
         variant: "destructive",
       });
@@ -60,13 +79,17 @@ const Auth = () => {
               <LogIn className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome to TETR AI Tutor</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {isSignUp ? "Create Account" : "Welcome to TETR AI Tutor"}
+          </CardTitle>
           <CardDescription>
-            Enter your credentials to access the AI tutor
+            {isSignUp 
+              ? "Create a new account to access the AI tutor" 
+              : "Enter your credentials to access the AI tutor"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Input
                 type="email"
@@ -88,7 +111,16 @@ const Auth = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
+            </Button>
+            <Button 
+              type="button" 
+              variant="ghost" 
+              className="w-full" 
+              onClick={() => setIsSignUp(!isSignUp)}
+              disabled={loading}
+            >
+              {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
             </Button>
           </form>
         </CardContent>
