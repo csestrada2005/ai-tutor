@@ -6,6 +6,7 @@ import { ChatMessage } from "./ChatMessage";
 import { Loader2, Send, BookOpen, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 type Source = {
   content: string;
@@ -127,6 +128,9 @@ export const ChatInterface = () => {
     setIsLoading(true);
 
     try {
+      // Increment prompt counter
+      await supabase.rpc('increment_prompt_count');
+      
       await streamChat(userMessage);
     } catch (error) {
       console.error("Chat error:", error);

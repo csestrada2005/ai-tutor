@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           id: string
           last_updated: string
+          prompt_count: number | null
           visit_count: number
         }
         Insert: {
           id?: string
           last_updated?: string
+          prompt_count?: number | null
           visit_count?: number
         }
         Update: {
           id?: string
           last_updated?: string
+          prompt_count?: number | null
           visit_count?: number
         }
         Relationships: []
@@ -37,6 +40,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_prompt_count: { Args: never; Returns: number }
       increment_visitor_count: { Args: never; Returns: number }
     }
     Enums: {
