@@ -157,7 +157,7 @@ export const ChatInterface = () => {
               </Button>
             </Link>
             <BookOpen className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold">A TETR Way to Study</h1>
+            <h1 className="text-2xl font-bold">Ask TETR: A TETR Way to Study</h1>
           </div>
         </div>
       </div>

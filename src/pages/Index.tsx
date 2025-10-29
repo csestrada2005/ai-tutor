@@ -35,7 +35,7 @@ const Index = () => {
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
-                A TETR Way to Study
+                Ask TETR: A TETR Way to Study
               </h1>
               
               <p className="text-lg text-muted-foreground">
@@ -212,12 +212,12 @@ const Index = () => {
             <div className="flex items-center gap-2 text-2xl font-bold">
               <GraduationCap className="w-8 h-8 text-primary" />
               <span className="text-primary font-bold">
-                A TETR Way to Study
+                Ask TETR: A TETR Way to Study
               </span>
             </div>
             
             <p className="text-muted-foreground text-center">
-              © 2025 A TETR Way to Study. Built for TETR College of Business students.
+              © 2025 Ask TETR: A TETR Way to Study. Built for TETR College of Business students.
             </p>
           </div>
         </div>

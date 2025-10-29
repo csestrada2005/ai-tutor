@@ -21,7 +21,7 @@ const SelectSection = () => {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
             <GraduationCap className="w-12 h-12 text-primary" />
-            <h1 className="text-4xl font-bold">A TETR Way to Study</h1>
+            <h1 className="text-4xl font-bold">Ask TETR: A TETR Way to Study</h1>
           </div>
           <p className="text-xl text-muted-foreground">
             Select your section to get started
