@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { ChatMessage } from "./ChatMessage";
 import { Loader2, Send, BookOpen, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -24,35 +24,11 @@ type Message = {
   sources?: Source[];
 };
 
-const SUBJECTS = [
-  "AIML101 How do machines see, hear or speak",
-  "PRTC301 How to use statistics to build a better business",
-  "PRTC201 How to get comfortable with excel",
-  "FIFI101 How to understand basic financial terminology",
-  "LA101 How to decode global trends and navigate economic transformations",
-  "MAST102 How to read market for better decision making",
-  "SAMA101 How to identify gaps in the market",
-  "SAMA401 How to execute digital marketing on Meta",
-  "SAMA502 How to execute CRO and increase AOV",
-  "MAST401 How to validate, shape, and launch a startup",
-  "COMM101 How to own a stage",
-  "DRP101 How to build a dropshipping business",
-  "MAST601 How to network effortlessly",
-];
-
-const PERSONAS = {
-  "Study": "Reinforce knowledge by explaining concepts from the course materials with clear examples and interactive Q&A",
-  "Quiz Maker": "Generate quiz questions and practice problems based strictly on the course content to test understanding",
-  "Professor": "Teach concepts like a professor would, providing thorough academic explanations with depth and context from the lectures",
-  "Summary Creator": "Create comprehensive summaries of specific topics found in the database, condensing key information efficiently",
-};
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [selectedPersona, setSelectedPersona] = useState<string>("Study");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -63,17 +39,6 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  // Clear chat when class changes
-  useEffect(() => {
-    if (selectedClass && messages.length > 0) {
-      setMessages([]);
-      toast({
-        title: "Chat cleared",
-        description: `Switched to ${selectedClass}`,
-      });
-    }
-  }, [selectedClass]);
 
   const streamChat = async (userMessage: string) => {
     const CHAT_URL = "https://professor-agent-platform.onrender.com/api/chat";
@@ -86,8 +51,6 @@ export const ChatInterface = () => {
       },
       body: JSON.stringify({
         messages: [...messages, { role: "user", content: userMessage }],
-        selectedClass,
-        persona: PERSONAS[selectedPersona as keyof typeof PERSONAS],
       }),
     });
 
@@ -157,14 +120,6 @@ export const ChatInterface = () => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-    if (!selectedClass) {
-      toast({
-        title: "Select a subject",
-        description: "Please choose a subject before asking questions",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const userMessage = input.trim();
     setInput("");
@@ -188,45 +143,17 @@ export const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Header with controls */}
+      {/* Header */}
       <div className="border-b bg-card p-4">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/">
-                <Button variant="ghost" size="icon">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              </Link>
-              <BookOpen className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-bold">A TETR Way to Study</h1>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Subject" />
-              </SelectTrigger>
-              <SelectContent>
-                {SUBJECTS.map((subject) => (
-                  <SelectItem key={subject} value={subject}>
-                    {subject}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedPersona} onValueChange={setSelectedPersona}>
-              <SelectTrigger>
-                <SelectValue placeholder="Teaching Style" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.keys(PERSONAS).map((persona) => (
-                  <SelectItem key={persona} value={persona}>
-                    {persona}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3">
+            <Link to="/">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <BookOpen className="w-6 h-6 text-primary" />
+            <h1 className="text-2xl font-bold">A TETR Way to Study</h1>
           </div>
         </div>
       </div>
@@ -267,11 +194,11 @@ export const ChatInterface = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder={selectedClass ? "Ask your question..." : "Select a subject first..."}
-            disabled={isLoading || !selectedClass}
+            placeholder="Ask your question..."
+            disabled={isLoading}
             className="flex-1"
           />
-          <Button onClick={handleSend} disabled={isLoading || !input.trim() || !selectedClass}>
+          <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>
