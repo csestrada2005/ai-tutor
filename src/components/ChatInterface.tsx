@@ -42,13 +42,13 @@ export const ChatInterface = () => {
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
-    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-tutor-chat`;
+    const CHAT_URL = "https://professor-agent-platform.onrender.com/api/chat";
     
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        "x-api-key": import.meta.env.VITE_API_KEY,
       },
       body: JSON.stringify({
         messages: [...messages, { role: "user", content: userMessage }],
