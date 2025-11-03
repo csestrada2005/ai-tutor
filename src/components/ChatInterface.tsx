@@ -96,6 +96,8 @@ export const ChatInterface = () => {
         if (!line.startsWith("data: ")) continue;
 
         const jsonStr = line.slice(6).trim();
+        console.debug("[SSE line]", line);
+        
         if (jsonStr === "[DONE]") {
           streamDone = true;
           break;
@@ -103,13 +105,20 @@ export const ChatInterface = () => {
 
         try {
           const parsed = JSON.parse(jsonStr);
+          console.debug("[SSE parsed]", parsed);
+          
+          // Check for server error
+          if (parsed.error) {
+            throw new Error(parsed.error);
+          }
           
           // Check for sources in the first chunk
           if (parsed.sources) {
             sources = parsed.sources || [];
           }
           
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          // Accept multiple token shapes
+          const content = parsed?.choices?.[0]?.delta?.content || parsed?.content || parsed?.text;
           if (content) {
             assistantContent += content;
             setMessages((prev) => {
@@ -122,11 +131,63 @@ export const ChatInterface = () => {
               return [...prev, { role: "assistant", content: assistantContent, sources }];
             });
           }
-        } catch {
+        } catch (e) {
+          // If it's an error from backend, re-throw it
+          if (e instanceof Error && e.message !== "Unexpected token") {
+            throw e;
+          }
+          // Otherwise it's a JSON parse error, keep the line in buffer
           textBuffer = line + "\n" + textBuffer;
           break;
         }
       }
+    }
+
+    // Process any remaining buffer after stream ends
+    if (textBuffer.trim()) {
+      const lines = textBuffer.split("\n");
+      for (const line of lines) {
+        if (line.trim() && line.startsWith("data: ")) {
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr !== "[DONE]") {
+            try {
+              const parsed = JSON.parse(jsonStr);
+              console.debug("[SSE final buffer]", parsed);
+              
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+              
+              if (parsed.sources && !sources.length) {
+                sources = parsed.sources;
+              }
+              
+              const content = parsed?.choices?.[0]?.delta?.content || parsed?.content || parsed?.text;
+              if (content) {
+                assistantContent += content;
+                setMessages((prev) => {
+                  const last = prev[prev.length - 1];
+                  if (last?.role === "assistant") {
+                    return prev.map((m, i) =>
+                      i === prev.length - 1 ? { ...m, content: assistantContent, sources } : m
+                    );
+                  }
+                  return [...prev, { role: "assistant", content: assistantContent, sources }];
+                });
+              }
+            } catch (e) {
+              if (e instanceof Error && e.message !== "Unexpected token") {
+                throw e;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Check if we got any content
+    if (!assistantContent.trim()) {
+      throw new Error("The AI didn't send any content. Please try again.");
     }
   };
 
