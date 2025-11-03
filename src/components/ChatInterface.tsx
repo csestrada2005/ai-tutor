@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
+import { Card } from "@/components/ui/card";
 import { ChatMessage } from "./ChatMessage";
 import { Loader2, Send, BookOpen, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import personas from "@/data/personas.json";
 
 type Source = {
   content: string;
@@ -25,12 +26,21 @@ type Message = {
   sources?: Source[];
 };
 
+type Persona = {
+  professor_name: string;
+  style_prompt: string;
+};
+
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const availableClasses = Object.keys(personas) as string[];
+  const selectedPersona = selectedClass ? (personas as Record<string, Persona>)[selectedClass] : null;
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -42,18 +52,17 @@ export const ChatInterface = () => {
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
-    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-tutor-chat`;
+    const CHAT_URL = "https://professor-agent-platform.onrender.com/api/chat";
     
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        "x-api-key": import.meta.env.VITE_API_KEY,
       },
       body: JSON.stringify({
         messages: [...messages.map(({ role, content }) => ({ role, content })), { role: "user", content: userMessage }],
-        selectedClass: null,
-        persona: "tutor",
+        class_id: selectedClass,
       }),
     });
 
@@ -147,19 +156,63 @@ export const ChatInterface = () => {
     }
   };
 
+  // Show class selection if no class is selected
+  if (!selectedClass) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <Card className="w-full max-w-2xl p-8">
+          <h1 className="text-3xl font-bold text-center mb-2">🎓 Professor AI Tutor</h1>
+          <p className="text-center text-muted-foreground mb-8">
+            Select a course to start chatting with your AI professor
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {availableClasses.map((classId) => {
+              const persona = (personas as Record<string, Persona>)[classId];
+              return (
+                <Button
+                  key={classId}
+                  onClick={() => setSelectedClass(classId)}
+                  variant="outline"
+                  className="h-auto p-4 flex flex-col items-start gap-2 hover:bg-primary/10"
+                >
+                  <span className="font-semibold text-lg">{classId}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Professor: {persona.professor_name}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="border-b bg-card p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Link to="/">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <BookOpen className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold">Ask TETR: A TETR Way to Study</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <div>
+                <h1 className="text-xl font-bold">{selectedClass} - AI Tutor</h1>
+                <p className="text-sm text-muted-foreground">
+                  Professor: {selectedPersona?.professor_name}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelectedClass(null);
+                setMessages([]);
+              }}
+            >
+              Change Class
+            </Button>
           </div>
         </div>
       </div>
