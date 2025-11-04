@@ -8,6 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import personas from "@/data/personas.json";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Source = {
   content: string;
@@ -33,11 +40,21 @@ type Persona = {
 };
 
 
+type Mode = "balanced" | "study" | "professor" | "socratic";
+
+const MODE_DESCRIPTIONS = {
+  balanced: "Balanced tutor - A helpful mix of guidance and explanation",
+  study: "Study buddy - Helps you review and reinforce material",
+  professor: "Professor mode - Authoritative first-person teaching style",
+  socratic: "Socratic method - Guides you to discover answers through questions",
+};
+
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
+  const [selectedMode, setSelectedMode] = useState<Mode>("balanced");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const availableClasses = Object.keys(personas) as string[];
@@ -64,6 +81,7 @@ export const ChatInterface = () => {
       body: JSON.stringify({
         messages: [...messages.map(({ role, content }) => ({ role, content })), { role: "user", content: userMessage }],
         class_id: selectedClass,
+        persona: selectedMode,
       }),
     });
 
@@ -259,7 +277,7 @@ export const ChatInterface = () => {
       {/* Header */}
       <div className="border-b bg-card p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <BookOpen className="w-6 h-6 text-primary" />
               <div>
@@ -279,6 +297,30 @@ export const ChatInterface = () => {
             >
               Change Class
             </Button>
+          </div>
+          
+          {/* Mode Selector */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+              Teaching Mode:
+            </span>
+            <Select value={selectedMode} onValueChange={(value) => setSelectedMode(value as Mode)}>
+              <SelectTrigger className="w-full max-w-md">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(MODE_DESCRIPTIONS) as Mode[]).map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium capitalize">{mode}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {MODE_DESCRIPTIONS[mode]}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
