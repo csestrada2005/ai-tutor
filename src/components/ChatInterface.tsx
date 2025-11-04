@@ -236,91 +236,65 @@ export const ChatInterface = () => {
     }
   };
 
-  // Show class selection if no class is selected
-  if (!selectedClass) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Card className="w-full max-w-2xl p-8 max-h-[90vh] flex flex-col">
-          <h1 className="text-3xl font-bold text-center mb-2">🎓 Professor AI Tutor</h1>
-          <p className="text-center text-muted-foreground mb-8">
-            Select a course to start chatting with your AI professor
-          </p>
-          <div className="overflow-y-auto flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {availableClasses.map((classId) => {
-                const persona = (personas as Record<string, Persona>)[classId];
-                return (
-                  <Button
-                    key={classId}
-                    onClick={() => setSelectedClass(classId)}
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-start gap-2 hover:bg-primary/10 w-full"
-                  >
-                    <span className="font-semibold text-lg text-left break-words line-clamp-2 w-full">
-                      {persona.display_name || classId}
-                    </span>
-                    <span className="text-sm text-muted-foreground text-left w-full">
-                      Faculty: {persona.professor_name}
-                    </span>
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="border-b bg-card p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <BookOpen className="w-6 h-6 text-primary" />
-              <div>
-                <h1 className="text-xl font-bold">{selectedClass} - AI Tutor</h1>
-                <p className="text-sm text-muted-foreground">
-                  Professor: {selectedPersona?.professor_name}
-                </p>
+          <div className="flex flex-col gap-3">
+            {/* Class and Mode Selectors Row */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Course:
+                </span>
+                <Select value={selectedClass || ""} onValueChange={setSelectedClass}>
+                  <SelectTrigger className="w-full max-w-md">
+                    <SelectValue placeholder="Select a course" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableClasses.map((classId) => {
+                      const persona = (personas as Record<string, Persona>)[classId];
+                      return (
+                        <SelectItem key={classId} value={classId}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">
+                              {persona.display_name || classId}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {persona.professor_name}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Mode:
+                </span>
+                <Select value={selectedMode} onValueChange={(value) => setSelectedMode(value as Mode)}>
+                  <SelectTrigger className="w-full max-w-md">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(MODE_DESCRIPTIONS) as Mode[]).map((mode) => (
+                      <SelectItem key={mode} value={mode}>
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium capitalize">{mode}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {MODE_DESCRIPTIONS[mode]}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedClass(null);
-                setMessages([]);
-              }}
-            >
-              Change Class
-            </Button>
-          </div>
-          
-          {/* Mode Selector */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-              Teaching Mode:
-            </span>
-            <Select value={selectedMode} onValueChange={(value) => setSelectedMode(value as Mode)}>
-              <SelectTrigger className="w-full max-w-md">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(MODE_DESCRIPTIONS) as Mode[]).map((mode) => (
-                  <SelectItem key={mode} value={mode}>
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium capitalize">{mode}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {MODE_DESCRIPTIONS[mode]}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </div>
@@ -332,7 +306,11 @@ export const ChatInterface = () => {
             <div className="text-center py-12 text-muted-foreground">
               <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium mb-2">Welcome to TETR AI Tutor</p>
-              <p className="text-sm">Select a subject and ask your first question to get started!</p>
+              <p className="text-sm">
+                {selectedClass 
+                  ? "Ask your first question to get started!" 
+                  : "Select a course above to begin"}
+              </p>
             </div>
           ) : (
             messages.map((msg, idx) => (
@@ -361,11 +339,11 @@ export const ChatInterface = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder="Ask your question..."
-            disabled={isLoading}
+            placeholder={selectedClass ? "Ask your question..." : "Select a course first..."}
+            disabled={isLoading || !selectedClass}
             className="flex-1"
           />
-          <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+          <Button onClick={handleSend} disabled={isLoading || !input.trim() || !selectedClass}>
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>

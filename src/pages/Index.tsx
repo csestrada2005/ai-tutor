@@ -55,7 +55,7 @@ const Index = () => {
                     if (session) {
                       navigate('/demo');
                     } else {
-                      navigate('/select-section');
+                      navigate('/auth');
                     }
                   }}
                 >
@@ -189,7 +189,7 @@ const Index = () => {
                   if (session) {
                     navigate('/demo');
                   } else {
-                    navigate('/select-section');
+                    navigate('/auth');
                   }
                 }}
               >
