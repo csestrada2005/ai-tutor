@@ -70,7 +70,7 @@ export const ProtectedChatInterface = () => {
           <img 
             src="/asktetr-logo.png" 
             alt="Ask TETR Logo" 
-            className="h-12 w-auto"
+            className="h-20 w-auto"
           />
           <p className="text-xs text-muted-foreground">
             By: Juan Pablo Rocha, Alan Ayala and Samuel Estrada
