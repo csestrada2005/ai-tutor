@@ -368,8 +368,22 @@ export const ChatInterface = forwardRef((_, ref) => {
                 </span>
                 <Select 
                   value={selectedMode} 
-                  onValueChange={(value) => setSelectedMode(value as Mode)}
-                  disabled={!!activeConversationId}
+                  onValueChange={async (value) => {
+                    const newMode = value as Mode;
+                    setSelectedMode(newMode);
+                    
+                    // Update mode in database if conversation exists
+                    if (activeConversationId) {
+                      try {
+                        await supabase
+                          .from("conversations")
+                          .update({ mode: newMode })
+                          .eq("id", activeConversationId);
+                      } catch (error) {
+                        console.error("Error updating conversation mode:", error);
+                      }
+                    }
+                  }}
                 >
                   <SelectTrigger className="w-full max-w-md">
                     <SelectValue />

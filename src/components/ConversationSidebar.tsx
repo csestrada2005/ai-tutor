@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import personas from "@/data/personas.json";
 
 interface Conversation {
   id: string;
@@ -93,7 +94,7 @@ export const ConversationSidebar = ({
                   {conversation.title}
                 </div>
                 <div className="text-xs opacity-70">
-                  {conversation.class_id} • {formatDate(conversation.updated_at)}
+                  {(personas as Record<string, { display_name?: string }>)[conversation.class_id]?.display_name || conversation.class_id} • {formatDate(conversation.updated_at)}
                 </div>
               </button>
             ))
