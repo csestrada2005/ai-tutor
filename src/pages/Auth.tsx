@@ -57,6 +57,19 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Check if user limit is reached
+      const { data: limitReached, error: limitError } = await supabase.rpc('is_user_limit_reached');
+      
+      if (limitError) {
+        console.error('Error checking user limit:', limitError);
+      }
+      
+      if (limitReached) {
+        setLoading(false);
+        navigate('/full');
+        return;
+      }
+
       const redirectUrl = `${window.location.origin}/demo`;
       
       const { error } = await supabase.auth.signUp({

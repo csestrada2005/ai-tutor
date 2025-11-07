@@ -111,6 +111,7 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_user_limit_reached: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
