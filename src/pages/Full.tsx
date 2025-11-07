@@ -26,7 +26,7 @@ const Full = () => {
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">
-              Thank you for your interest in TETR AI Tutor! We're working very hard to provide 
+              Thank you for your interest in Ask Tetr! We're working very hard to provide 
               the best learning experience possible, and right now we're at full capacity.
             </p>
             
@@ -36,7 +36,7 @@ const Full = () => {
                 <div className="text-left">
                   <h3 className="font-semibold mb-1">We're Scaling Up</h3>
                   <p className="text-sm text-muted-foreground">
-                    Our team is actively working to expand our capacity so we can welcome more learners like you.
+                    JP, Alan and Sam are working day and night to expand our capacity so we can welcome everyone of you guys!!!
                   </p>
                 </div>
               </div>
