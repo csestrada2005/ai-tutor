@@ -26,20 +26,20 @@ export const FeedbackReminder = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Before you go...</AlertDialogTitle>
+          <AlertDialogTitle>Welcome to TETR AI Tutor! 🎓</AlertDialogTitle>
           <AlertDialogDescription>
-            We'd love to hear your thoughts! Your feedback helps us make the learning experience better for everyone.
+            We'd love to hear your thoughts! Your feedback helps us improve the learning experience for everyone. Feel free to share your suggestions anytime.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onContinue}>
-            Maybe later
+            Start Learning
           </AlertDialogCancel>
           <AlertDialogAction onClick={() => {
             onOpenChange(false);
             onFeedbackClick();
           }}>
-            Share Feedback
+            Share Feedback Now
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

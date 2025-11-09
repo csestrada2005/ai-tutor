@@ -17,6 +17,7 @@ export const ProtectedChatInterface = () => {
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [hasShownWelcomeReminder, setHasShownWelcomeReminder] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const chatRef = useRef<any>(null);
@@ -27,6 +28,12 @@ export const ProtectedChatInterface = () => {
       setLoading(false);
       if (!session) {
         navigate("/auth");
+      } else if (!hasShownWelcomeReminder) {
+        // Show welcome reminder after a short delay
+        setTimeout(() => {
+          setReminderDialogOpen(true);
+          setHasShownWelcomeReminder(true);
+        }, 1000);
       }
     });
 
@@ -38,7 +45,7 @@ export const ProtectedChatInterface = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, hasShownWelcomeReminder]);
 
   const handleLogout = async () => {
     setPendingAction(() => async () => {
@@ -63,6 +70,9 @@ export const ProtectedChatInterface = () => {
     if (pendingAction) {
       pendingAction();
       setPendingAction(null);
+    } else {
+      // Just close the dialog if no pending action (welcome reminder)
+      setReminderDialogOpen(false);
     }
   };
 

@@ -395,12 +395,12 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-w-[400px]">
                     {(Object.keys(MODE_DESCRIPTIONS) as Mode[]).map((mode) => (
-                      <SelectItem key={mode} value={mode}>
-                        <div className="flex flex-col items-start max-w-[280px]">
-                          <span className="font-medium capitalize text-sm">{mode}</span>
-                          <span className="text-xs text-muted-foreground line-clamp-2">
+                      <SelectItem key={mode} value={mode} className="cursor-pointer">
+                        <div className="flex flex-col items-start py-1">
+                          <span className="font-medium capitalize text-sm mb-0.5">{mode}</span>
+                          <span className="text-xs text-muted-foreground whitespace-normal leading-tight">
                             {MODE_DESCRIPTIONS[mode]}
                           </span>
                         </div>
