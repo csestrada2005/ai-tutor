@@ -26,7 +26,7 @@ export const FeedbackReminder = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Welcome to TETR AI Tutor! 🎓</AlertDialogTitle>
+          <AlertDialogTitle>Welcome to Ask TETR! 🎓</AlertDialogTitle>
           <AlertDialogDescription>
             We'd love to hear your thoughts! Your feedback helps us improve the learning experience for everyone. Feel free to share your suggestions anytime.
           </AlertDialogDescription>

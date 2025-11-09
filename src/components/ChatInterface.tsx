@@ -420,7 +420,7 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
           {messages.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2">Welcome to TETR AI Tutor</p>
+              <p className="text-lg font-medium mb-2">Welcome to Ask TETR</p>
               <p className="text-sm">
                 {selectedClass 
                   ? "Ask your first question to get started!" 

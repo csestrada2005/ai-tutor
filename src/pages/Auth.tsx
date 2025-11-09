@@ -118,7 +118,7 @@ const Auth = () => {
               className="h-16 w-auto"
             />
           </div>
-          <CardTitle className="text-2xl font-bold">TETR AI Tutor</CardTitle>
+          <CardTitle className="text-2xl font-bold">Ask TETR</CardTitle>
           <CardDescription>
             Sign in or create an account to get started
           </CardDescription>

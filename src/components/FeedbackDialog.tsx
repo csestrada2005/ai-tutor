@@ -69,7 +69,7 @@ export const FeedbackDialog = ({ open, onOpenChange }: FeedbackDialogProps) => {
         <DialogHeader>
           <DialogTitle>Share Your Feedback</DialogTitle>
           <DialogDescription>
-            We value your input! Let us know how we can improve your learning experience.
+            We value your opinion! Let us know how we can improve your learning experience.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
