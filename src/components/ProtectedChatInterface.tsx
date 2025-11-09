@@ -16,6 +16,7 @@ export const ProtectedChatInterface = () => {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false);
+  const [reminderVariant, setReminderVariant] = useState<"welcome" | "logout">("welcome");
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [hasShownWelcomeReminder, setHasShownWelcomeReminder] = useState(false);
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export const ProtectedChatInterface = () => {
       } else if (!hasShownWelcomeReminder) {
         // Show welcome reminder after a short delay
         setTimeout(() => {
+          setReminderVariant("welcome");
           setReminderDialogOpen(true);
           setHasShownWelcomeReminder(true);
         }, 1000);
@@ -56,14 +58,12 @@ export const ProtectedChatInterface = () => {
       });
       navigate("/");
     });
+    setReminderVariant("logout");
     setReminderDialogOpen(true);
   };
 
   const handleStartLearning = () => {
-    setPendingAction(() => () => {
-      chatRef.current?.handleNewChat();
-    });
-    setReminderDialogOpen(true);
+    chatRef.current?.handleNewChat();
   };
 
   const executePendingAction = () => {
@@ -160,6 +160,7 @@ export const ProtectedChatInterface = () => {
         onOpenChange={setReminderDialogOpen}
         onFeedbackClick={() => setFeedbackDialogOpen(true)}
         onContinue={executePendingAction}
+        variant={reminderVariant}
       />
     </>
   );

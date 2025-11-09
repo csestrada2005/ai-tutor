@@ -14,32 +14,41 @@ interface FeedbackReminderProps {
   onOpenChange: (open: boolean) => void;
   onFeedbackClick: () => void;
   onContinue: () => void;
+  variant?: "welcome" | "logout";
 }
 
 export const FeedbackReminder = ({ 
   open, 
   onOpenChange, 
   onFeedbackClick,
-  onContinue 
+  onContinue,
+  variant = "welcome"
 }: FeedbackReminderProps) => {
+  const isWelcome = variant === "welcome";
+  
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Welcome to Ask TETR! 🎓</AlertDialogTitle>
+          <AlertDialogTitle>
+            {isWelcome ? "Welcome to Ask TETR! 🎓" : "Before you go..."}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            We'd love to hear your thoughts! Your feedback helps us improve the learning experience for everyone. Feel free to share your suggestions anytime.
+            {isWelcome 
+              ? "We'd love to hear your thoughts! Your feedback helps us improve the learning experience for everyone. Feel free to share your suggestions anytime."
+              : "We'd love to hear your thoughts! Your feedback helps us make the learning experience better for everyone."
+            }
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onContinue}>
-            Start Learning
+            {isWelcome ? "Start Learning" : "Maybe Later"}
           </AlertDialogCancel>
           <AlertDialogAction onClick={() => {
             onOpenChange(false);
             onFeedbackClick();
           }}>
-            Share Feedback Now
+            {isWelcome ? "Share Feedback Now" : "Share Feedback"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
