@@ -26,6 +26,17 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate @tetr.com email domain
+    if (!email.toLowerCase().endsWith('@tetr.com')) {
+      toast({
+        title: "Invalid email domain",
+        description: "Please log in with your @tetr.com account",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -54,6 +65,17 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate @tetr.com email domain
+    if (!email.toLowerCase().endsWith('@tetr.com')) {
+      toast({
+        title: "Invalid email domain",
+        description: "Please log in with your @tetr.com account",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {

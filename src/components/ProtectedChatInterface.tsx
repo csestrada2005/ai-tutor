@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChatInterface } from "./ChatInterface";
 import { ConversationSidebar } from "./ConversationSidebar";
 import { Button } from "./ui/button";
-import { LogOut, MessageSquare } from "lucide-react";
+import { LogOut, MessageSquare, Menu, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
 import { FeedbackDialog } from "./FeedbackDialog";
@@ -19,6 +19,7 @@ export const ProtectedChatInterface = () => {
   const [reminderVariant, setReminderVariant] = useState<"welcome" | "logout">("welcome");
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [hasShownWelcomeReminder, setHasShownWelcomeReminder] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const chatRef = useRef<any>(null);
@@ -97,6 +98,14 @@ export const ProtectedChatInterface = () => {
         <div className="bg-card border-b py-3 px-4 md:py-4 md:px-6">
           <div className="flex justify-between items-center gap-4">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="md:hidden"
+              >
+                {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
               <img 
                 src="/asktetr-logo.png" 
                 alt="Ask TETR Logo" 
@@ -131,16 +140,39 @@ export const ProtectedChatInterface = () => {
             </div>
           </div>
         </div>
-        <div className="flex-1 flex overflow-hidden flex-col md:flex-row">
-          <div className="w-full md:w-64 flex-shrink-0">
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          
+          {/* Sidebar */}
+          <div className={`
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            md:translate-x-0
+            fixed md:relative
+            z-50 md:z-auto
+            w-64 h-full
+            transition-transform duration-300 ease-in-out
+            md:flex-shrink-0
+          `}>
             <ConversationSidebar
               activeConversationId={activeConversationId}
               onSelectConversation={(conversation) => {
                 chatRef.current?.loadConversation(conversation.id);
+                setSidebarOpen(false);
               }}
-              onNewChat={handleStartLearning}
+              onNewChat={() => {
+                handleStartLearning();
+                setSidebarOpen(false);
+              }}
             />
           </div>
+          
+          {/* Chat Interface */}
           <div className="flex-1 overflow-hidden">
             <ChatInterface 
               ref={chatRef} 
