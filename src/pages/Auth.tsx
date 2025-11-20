@@ -13,14 +13,25 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Check if user is already logged in or resetting password
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/demo");
+        // Check if this is a password recovery session
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const type = hashParams.get('type');
+        
+        if (type === 'recovery') {
+          setIsResettingPassword(true);
+        } else {
+          navigate("/demo");
+        }
       }
     });
   }, [navigate]);
@@ -169,6 +180,56 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure both passwords are identical.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password updated!",
+        description: "Your password has been successfully changed.",
+      });
+      
+      setIsResettingPassword(false);
+      setNewPassword("");
+      setConfirmPassword("");
+      navigate("/demo");
+    } catch (error: any) {
+      toast({
+        title: "Password reset failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
@@ -182,11 +243,47 @@ const Auth = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Ask TETR</CardTitle>
           <CardDescription>
-            {showForgotPassword ? "Reset your password" : "Sign in or create an account to get started"}
+            {isResettingPassword 
+              ? "Create a new password" 
+              : showForgotPassword 
+                ? "Reset your password" 
+                : "Sign in or create an account to get started"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {showForgotPassword ? (
+          {isResettingPassword ? (
+            <form onSubmit={handlePasswordReset} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="New password (min 6 characters)"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  minLength={6}
+                />
+              </div>
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  minLength={6}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loading}
+              >
+                {loading ? "Updating password..." : "Update Password"}
+              </Button>
+            </form>
+          ) : showForgotPassword ? (
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="space-y-2">
                 <Input
