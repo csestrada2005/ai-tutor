@@ -12,6 +12,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -129,6 +130,45 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate @tetr.com email domain
+    if (!email.toLowerCase().endsWith('@tetr.com')) {
+      toast({
+        title: "Invalid email domain",
+        description: "Please use your @tetr.com account",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/demo`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Check your email",
+        description: "We've sent you a password reset link.",
+      });
+      setShowForgotPassword(false);
+      setEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Password reset failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
@@ -142,11 +182,41 @@ const Auth = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Ask TETR</CardTitle>
           <CardDescription>
-            Sign in or create an account to get started
+            {showForgotPassword ? "Reset your password" : "Sign in or create an account to get started"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
+          {showForgotPassword ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your @tetr.com email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <Button 
+                type="button"
+                variant="ghost"
+                className="w-full"
+                onClick={() => setShowForgotPassword(false)}
+                disabled={loading}
+              >
+                Back to Sign In
+              </Button>
+            </form>
+          ) : (
+            <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -178,6 +248,15 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   <LogIn className="w-4 h-4 mr-2" />
                   {loading ? "Signing in..." : "Sign In"}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground"
+                  onClick={() => setShowForgotPassword(true)}
+                  disabled={loading}
+                >
+                  Forgot password?
                 </Button>
               </form>
             </TabsContent>
@@ -212,8 +291,9 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+          )}
           
-          <Button 
+          <Button
             type="button" 
             variant="link" 
             className="w-full mt-4 text-sm"
