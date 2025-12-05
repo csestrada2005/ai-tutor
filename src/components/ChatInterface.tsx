@@ -6,6 +6,7 @@ import { Loader2, Send, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import personas from "@/data/personas.json";
+import { BatchSelection } from "./BatchSelection";
 import {
   Select,
   SelectContent,
@@ -37,6 +38,8 @@ type Persona = {
   style_prompt: string;
 };
 
+type BatchPersonas = Record<string, Record<string, Persona>>;
+
 type Mode = "balanced" | "study" | "professor" | "socratic";
 
 const MODE_DESCRIPTIONS = {
@@ -56,11 +59,12 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
   const [isLoading, setIsLoading] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<Mode>("balanced");
-  const [selectedBatch, setSelectedBatch] = useState<string>("2029");
+  const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const availableClasses = Object.keys(personas) as string[];
+  const batchPersonas = (personas as BatchPersonas)[selectedBatch || "2029"] || {};
+  const availableClasses = Object.keys(batchPersonas);
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -332,6 +336,14 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
     }
   };
 
+  // Show batch selection if not selected
+  if (!selectedBatch) {
+    return <BatchSelection onBatchSelect={(batchId) => {
+      setSelectedBatch(batchId);
+      setSelectedClass(null); // Reset course when batch changes
+    }} />;
+  }
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -353,7 +365,7 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
                   </SelectTrigger>
                   <SelectContent>
                     {availableClasses.map((classId) => {
-                      const persona = (personas as Record<string, Persona>)[classId];
+                      const persona = batchPersonas[classId];
                       return (
                         <SelectItem key={classId} value={classId}>
                           <div className="flex flex-col items-start">
@@ -412,26 +424,10 @@ export const ChatInterface = forwardRef(({ onConversationChange }: ChatInterface
                 </Select>
               </div>
               
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap flex-shrink-0">
-                  Batch:
+              <div className="flex items-center gap-2">
+                <span className="text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  {selectedBatch === "2029" ? "2029 Batch" : "2028 Batch"}
                 </span>
-                <Select 
-                  value={selectedBatch} 
-                  onValueChange={setSelectedBatch}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2029">
-                      <span className="font-medium text-sm">2029 Batch</span>
-                    </SelectItem>
-                    <SelectItem value="2028">
-                      <span className="font-medium text-sm">2028 Batch</span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>
