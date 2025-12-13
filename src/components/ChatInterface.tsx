@@ -27,6 +27,7 @@ type Source = {
 };
 
 type Message = { 
+  id?: string;
   role: "user" | "assistant"; 
   content: string; 
   sources?: Source[];
@@ -105,6 +106,7 @@ export const ChatInterface = React.forwardRef<ChatInterfaceHandle, ChatInterface
         if (msgError) throw msgError;
 
         setMessages(messageData.map(msg => ({
+          id: msg.id,
           role: msg.role as "user" | "assistant",
           content: msg.content,
           sources: msg.sources as Source[] | undefined,
@@ -268,12 +270,25 @@ export const ChatInterface = React.forwardRef<ChatInterfaceHandle, ChatInterface
 
       // Save assistant message to database
       if (assistantContent.trim()) {
-        await supabase.from("messages").insert({
+        const { data: savedMsg } = await supabase.from("messages").insert({
           conversation_id: conversationId,
           role: "assistant",
           content: assistantContent,
           sources: sources.length > 0 ? sources : null,
-        });
+        }).select('id').single();
+
+        // Update the message with its ID
+        if (savedMsg) {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant") {
+              return prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, id: savedMsg.id } : m
+              );
+            }
+            return prev;
+          });
+        }
       }
 
       if (!assistantContent.trim()) {
@@ -478,10 +493,11 @@ export const ChatInterface = React.forwardRef<ChatInterfaceHandle, ChatInterface
             ) : (
               messages.map((msg, idx) => (
                 <ChatMessage 
-                  key={idx} 
+                  key={msg.id || idx} 
                   role={msg.role} 
                   content={msg.content}
                   sources={msg.sources}
+                  messageId={msg.id}
                 />
               ))
             )}
