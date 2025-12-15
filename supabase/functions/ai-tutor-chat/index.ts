@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, selectedClass, persona } = await req.json();
+    const { messages, selectedClass, persona, file_content, image_data } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
@@ -52,6 +52,11 @@ serve(async (req) => {
       }
     }
 
+    // Build file context block if file_content is provided
+    const fileContextBlock = file_content
+      ? `\n\n=== USER UPLOADED DOCUMENT ===\n${file_content}\n==============================\n`
+      : "";
+
     // Build system prompt based on class and persona
     const systemPrompt = `You are an AI tutor for ${selectedClass || "general studies"}. ${
       persona ? `Your teaching style: ${persona}` : ""
@@ -63,6 +68,7 @@ CRITICAL INSTRUCTIONS:
 - If the course materials don't contain the answer, say "I don't have information about that in the course materials"
 - When answering, ALWAYS reference the source material by number [1], [2], etc.
 - Stay strictly within the scope of the course topic
+${file_content ? "- When a user uploaded document is provided, use it as additional context to answer questions" : ""}
 
 FORMATTING RULES (MANDATORY):
 - NEVER use markdown bold formatting (**text**) - just write plain text
@@ -77,10 +83,42 @@ Your role:
 - Break down complex topics into easy chunks
 - Help students learn efficiently without overwhelming them
 ${courseContext ? courseContext : "\n\nNo course materials were found for this query. Inform the student that you need course content to answer their question."}
-
+${fileContextBlock}
 Keep responses SHORT, clear, and conversational. Students prefer quick, actionable answers over long explanations.`;
 
-    console.log("AI Tutor request:", { selectedClass, persona, messageCount: messages.length, sourcesFound: sources.length });
+    console.log("AI Tutor request:", { 
+      selectedClass, 
+      persona, 
+      messageCount: messages.length, 
+      sourcesFound: sources.length,
+      hasFileContent: !!file_content,
+      hasImageData: !!image_data 
+    });
+
+    // Build messages array with potential multimodal content
+    const aiMessages: any[] = [{ role: "system", content: systemPrompt }];
+    
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+      
+      // If this is the last user message and we have image_data, make it multimodal
+      if (i === messages.length - 1 && msg.role === "user" && image_data?.data && image_data?.media_type) {
+        aiMessages.push({
+          role: "user",
+          content: [
+            { type: "text", text: msg.content },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${image_data.media_type};base64,${image_data.data}`
+              }
+            }
+          ]
+        });
+      } else {
+        aiMessages.push(msg);
+      }
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -90,10 +128,7 @@ Keep responses SHORT, clear, and conversational. Students prefer quick, actionab
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
+        messages: aiMessages,
         stream: true,
       }),
     });
