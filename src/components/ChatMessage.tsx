@@ -102,7 +102,7 @@ export const ChatMessage = ({ role, content, sources, messageId }: ChatMessagePr
     return (
       <div className="flex justify-end animate-fade-in">
         <div className="max-w-[85%] md:max-w-[70%]">
-          <div className="bg-[hsl(var(--chat-user-bg))] text-[hsl(var(--chat-user-fg))] px-4 py-3 rounded-2xl rounded-br-md shadow-md">
+          <div className="bg-white text-black px-4 py-3 rounded-2xl rounded-br-md shadow-md">
             <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{content}</p>
           </div>
         </div>
