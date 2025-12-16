@@ -580,90 +580,92 @@ export const ChatInterface = React.forwardRef<ChatInterfaceHandle, ChatInterface
             </div>
           </div>
           
-          {/* Centered welcome content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
-            <div className="text-center space-y-6 max-w-2xl animate-fade-in">
-              {/* Gradient icon */}
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-lg mx-auto">
-                <Search className="w-8 h-8 text-primary" />
-              </div>
-              
-              {/* Welcome text */}
-              <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
-                  What would you like to learn?
-                </h1>
-                <p className="text-muted-foreground text-lg">
-                  {selectedClass ? `Ready to help you with ${batchPersonas[selectedClass]?.display_name || selectedClass}` : "Select a course to get started"}
-                </p>
-              </div>
-            </div>
-            
-            {/* Input area - positioned lower */}
-            <div className="w-full max-w-3xl mt-12">
-              {uploadedFile && <div className="flex items-center gap-2 px-4 py-2 mb-3 bg-secondary/50 rounded-xl border border-border/50 mx-2">
-                  {uploadedFile.type === 'image' ? (
-                    <img src={uploadedFile.content} alt={uploadedFile.name} className="w-10 h-10 object-cover rounded-lg flex-shrink-0" />
-                  ) : (
-                    <FileText className="w-4 h-4 text-primary flex-shrink-0" />
-                  )}
-                  <span className="text-sm text-foreground truncate flex-1">{uploadedFile.name}</span>
-                  <Button variant="ghost" size="sm" onClick={clearUploadedFile} className="h-6 w-6 p-0 hover:bg-destructive/20">
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>}
-              
-              <div className="relative mx-2">
-                <input ref={fileInputRef} type="file" onChange={handleFileUpload} accept=".txt,.md,.csv,.json,.html,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.webp,image/*" className="hidden" />
-                <input ref={galleryInputRef} type="file" onChange={handleFileUpload} accept="image/*" className="hidden" />
-                <input ref={cameraInputRef} type="file" onChange={handleFileUpload} accept="image/*" capture="environment" className="hidden" />
+          {/* Centered welcome content - scrollable on mobile */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="min-h-full flex flex-col items-center justify-center px-4 py-6 md:py-8">
+              <div className="text-center space-y-4 md:space-y-6 max-w-2xl animate-fade-in">
+                {/* Gradient icon */}
+                <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 shadow-lg mx-auto">
+                  <Search className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                </div>
                 
-                <div className="flex items-center gap-2 bg-secondary/80 rounded-2xl border border-border/50 px-4 py-3 shadow-lg backdrop-blur-sm transition-all focus-within:border-primary/50 focus-within:shadow-[var(--shadow-glow)]">
-                  <Popover open={attachMenuOpen} onOpenChange={setAttachMenuOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="sm" disabled={isLoading || !selectedClass} className="h-8 w-8 p-0 rounded-lg hover:bg-background/50">
-                        <Plus className="w-4 h-4 text-muted-foreground" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48 p-1" align="start">
-                      <button
-                        onClick={() => { fileInputRef.current?.click(); setAttachMenuOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
-                      >
-                        <Paperclip className="w-4 h-4" />
-                        Upload file
-                      </button>
-                      <button
-                        onClick={() => { galleryInputRef.current?.click(); setAttachMenuOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
-                      >
-                        <ImageIcon className="w-4 h-4" />
-                        Photos
-                      </button>
-                      <button
-                        onClick={() => { cameraInputRef.current?.click(); setAttachMenuOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
-                      >
-                        <Camera className="w-4 h-4" />
-                        Camera
-                      </button>
-                    </PopoverContent>
-                  </Popover>
-                  
-                  <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()} placeholder={selectedClass ? "Ask anything..." : "Select a course first..."} disabled={isLoading || !selectedClass} className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-sm" />
-                  
-                  <Button onClick={handleSend} disabled={isLoading || !input.trim() || !selectedClass} size="sm" className="h-8 w-8 p-0 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30">
-                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
-                  </Button>
+                {/* Welcome text */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl md:text-4xl font-semibold text-foreground">
+                    What would you like to learn?
+                  </h1>
+                  <p className="text-muted-foreground text-base md:text-lg px-2">
+                    {selectedClass ? `Ready to help you with ${batchPersonas[selectedClass]?.display_name || selectedClass}` : "Select a course to get started"}
+                  </p>
                 </div>
               </div>
               
-              {/* Quick suggestions */}
-              {selectedClass && <div className="flex flex-wrap justify-center gap-2 mt-6 px-4">
-                  {["Explain the key concepts", "Help me study", "Quiz me on this topic"].map(suggestion => <button key={suggestion} onClick={() => setInput(suggestion)} className="px-4 py-2 text-sm rounded-full bg-secondary/50 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all">
-                      {suggestion}
-                    </button>)}
-                </div>}
+              {/* Input area */}
+              <div className="w-full max-w-3xl mt-8 md:mt-12">
+                {uploadedFile && <div className="flex items-center gap-2 px-4 py-2 mb-3 bg-secondary/50 rounded-xl border border-border/50 mx-2">
+                    {uploadedFile.type === 'image' ? (
+                      <img src={uploadedFile.content} alt={uploadedFile.name} className="w-10 h-10 object-cover rounded-lg flex-shrink-0" />
+                    ) : (
+                      <FileText className="w-4 h-4 text-primary flex-shrink-0" />
+                    )}
+                    <span className="text-sm text-foreground truncate flex-1">{uploadedFile.name}</span>
+                    <Button variant="ghost" size="sm" onClick={clearUploadedFile} className="h-6 w-6 p-0 hover:bg-destructive/20">
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>}
+                
+                <div className="relative mx-2">
+                  <input ref={fileInputRef} type="file" onChange={handleFileUpload} accept=".txt,.md,.csv,.json,.html,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.webp,image/*" className="hidden" />
+                  <input ref={galleryInputRef} type="file" onChange={handleFileUpload} accept="image/*" className="hidden" />
+                  <input ref={cameraInputRef} type="file" onChange={handleFileUpload} accept="image/*" capture="environment" className="hidden" />
+                  
+                  <div className="flex items-center gap-2 bg-secondary/80 rounded-2xl border border-border/50 px-3 md:px-4 py-3 shadow-lg backdrop-blur-sm transition-all focus-within:border-primary/50 focus-within:shadow-[var(--shadow-glow)]">
+                    <Popover open={attachMenuOpen} onOpenChange={setAttachMenuOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" disabled={isLoading || !selectedClass} className="h-8 w-8 p-0 rounded-lg hover:bg-background/50 flex-shrink-0">
+                          <Plus className="w-4 h-4 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48 p-1 bg-popover" align="start">
+                        <button
+                          onClick={() => { fileInputRef.current?.click(); setAttachMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
+                        >
+                          <Paperclip className="w-4 h-4" />
+                          Upload file
+                        </button>
+                        <button
+                          onClick={() => { galleryInputRef.current?.click(); setAttachMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Photos
+                        </button>
+                        <button
+                          onClick={() => { cameraInputRef.current?.click(); setAttachMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors"
+                        >
+                          <Camera className="w-4 h-4" />
+                          Camera
+                        </button>
+                      </PopoverContent>
+                    </Popover>
+                    
+                    <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && !e.shiftKey && handleSend()} placeholder={selectedClass ? "Ask anything..." : "Select a course first..."} disabled={isLoading || !selectedClass} className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-foreground/60 text-sm min-w-0" />
+                    
+                    <Button onClick={handleSend} disabled={isLoading || !input.trim() || !selectedClass} size="sm" className="h-8 w-8 p-0 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30 flex-shrink-0">
+                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Quick suggestions - improved mobile layout */}
+                {selectedClass && <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-6 px-2 pb-4">
+                    {["Explain the key concepts", "Help me study", "Quiz me on this topic"].map(suggestion => <button key={suggestion} onClick={() => setInput(suggestion)} className="px-3 md:px-4 py-2 text-xs md:text-sm rounded-full bg-secondary/50 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all whitespace-nowrap">
+                        {suggestion}
+                      </button>)}
+                  </div>}
+              </div>
             </div>
           </div>
         </div>;
