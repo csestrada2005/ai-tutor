@@ -10,14 +10,20 @@ export interface Message {
   content: string;
 }
 
+export interface Lecture {
+  id: string;
+  title: string;
+}
+
 const ProfessorAI = () => {
   const [mode, setMode] = useState<Mode>("Study");
   const [selectedLecture, setSelectedLecture] = useState<string | null>(null);
   const [selectedBatch, setSelectedBatch] = useState<string | null>(() => {
     return localStorage.getItem("professorSelectedBatch");
   });
-  const [lectures, setLectures] = useState<string[]>([]);
+  const [lectures, setLectures] = useState<Lecture[]>([]);
   const [lecturesLoading, setLecturesLoading] = useState(false);
+  const [lecturesError, setLecturesError] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const hasAutoTriggered = useRef(false);
@@ -28,6 +34,7 @@ const ProfessorAI = () => {
 
     const fetchLectures = async () => {
       setLecturesLoading(true);
+      setLecturesError(false);
       try {
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/professor-chat?endpoint=lectures`,
@@ -40,12 +47,20 @@ const ProfessorAI = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setLectures(data.lectures || []);
+          // Filter out any lectures with empty or null IDs
+          const validLectures = (data.lectures || []).filter(
+            (lecture: Lecture) => lecture.id && lecture.id.trim() !== ""
+          );
+          setLectures(validLectures);
         } else {
           console.error("Failed to fetch lectures:", response.status);
+          setLecturesError(true);
+          setLectures([]);
         }
       } catch (error) {
         console.error("Failed to fetch lectures:", error);
+        setLecturesError(true);
+        setLectures([]);
       } finally {
         setLecturesLoading(false);
       }
@@ -151,6 +166,7 @@ const ProfessorAI = () => {
         setSelectedBatch={handleBatchSelect}
         lectures={lectures}
         lecturesLoading={lecturesLoading}
+        lecturesError={lecturesError}
       />
       
       <ProfessorChat

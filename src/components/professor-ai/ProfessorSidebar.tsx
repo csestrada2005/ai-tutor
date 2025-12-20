@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Mode } from "@/pages/ProfessorAI";
+import type { Mode, Lecture } from "@/pages/ProfessorAI";
 
 interface ProfessorSidebarProps {
   mode: Mode;
@@ -17,8 +17,9 @@ interface ProfessorSidebarProps {
   setSelectedLecture: (lecture: string) => void;
   selectedBatch: string;
   setSelectedBatch: (batchId: string) => void;
-  lectures: string[];
+  lectures: Lecture[];
   lecturesLoading: boolean;
+  lecturesError: boolean;
 }
 
 const modeConfig = [
@@ -54,7 +55,17 @@ export const ProfessorSidebar = ({
   setSelectedBatch,
   lectures,
   lecturesLoading,
+  lecturesError,
 }: ProfessorSidebarProps) => {
+  const hasLectures = lectures.length > 0;
+  const isDisabled = lecturesLoading || !hasLectures;
+  
+  const getPlaceholderText = () => {
+    if (lecturesLoading) return "Loading lectures...";
+    if (lecturesError) return "Failed to load lectures";
+    if (!hasLectures) return "No lectures found";
+    return "Select a Lecture...";
+  };
   return (
     <aside className="w-72 min-w-72 h-full bg-card border-r border-border flex flex-col">
       {/* Header */}
@@ -94,7 +105,7 @@ export const ProfessorSidebar = ({
         <Select 
           value={selectedLecture || ""} 
           onValueChange={setSelectedLecture}
-          disabled={lecturesLoading}
+          disabled={isDisabled}
         >
           <SelectTrigger className="w-full bg-secondary/50 border-border text-foreground">
             {lecturesLoading ? (
@@ -103,22 +114,18 @@ export const ProfessorSidebar = ({
                 <span>Loading lectures...</span>
               </div>
             ) : (
-              <SelectValue placeholder="Select a Lecture..." />
+              <SelectValue placeholder={getPlaceholderText()} />
             )}
           </SelectTrigger>
-          <SelectContent className="bg-card border-border max-h-[300px]">
-            {lectures.length === 0 && !lecturesLoading ? (
-              <SelectItem value="" disabled>
-                No lectures available
-              </SelectItem>
-            ) : (
-              lectures.map((lecture) => (
-                <SelectItem key={lecture} value={lecture}>
-                  <span className="text-sm">{lecture}</span>
+          {hasLectures && (
+            <SelectContent className="bg-card border-border max-h-[300px]">
+              {lectures.map((lecture) => (
+                <SelectItem key={lecture.id} value={lecture.id}>
+                  <span className="text-sm">{lecture.title}</span>
                 </SelectItem>
-              ))
-            )}
-          </SelectContent>
+              ))}
+            </SelectContent>
+          )}
         </Select>
       </div>
 
