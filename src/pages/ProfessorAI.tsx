@@ -3,7 +3,10 @@ import { ProfessorChat } from "@/components/professor-ai/ProfessorChat";
 import { ProfessorBatchSelection } from "@/components/professor-ai/ProfessorBatchSelection";
 import { ProfessorHeader } from "@/components/professor-ai/ProfessorHeader";
 import { ProfessorDrawer } from "@/components/professor-ai/ProfessorDrawer";
+import { QuizCard, Quiz } from "@/components/professor-ai/QuizCard";
+import { QuizResults } from "@/components/professor-ai/QuizResults";
 import { toast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export type Mode = "Notes Creator" | "Quiz" | "Study";
 
@@ -86,6 +89,12 @@ const ProfessorAI = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const hasAutoTriggered = useRef(false);
 
+  // Quiz-specific state
+  const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizResults, setQuizResults] = useState<{ score: number; total: number } | null>(null);
+  const [lastQuizTopic, setLastQuizTopic] = useState<string>("");
+
   // Get available courses for selected batch
   const availableCourses = selectedBatch ? COURSES_BY_BATCH[selectedBatch] || [] : [];
   
@@ -141,6 +150,12 @@ const ProfessorAI = () => {
     setMessages([]);
     setStreamingContent("");
     hasAutoTriggered.current = false;
+    // Clear quiz state when mode changes
+    if (mode !== "Quiz") {
+      setCurrentQuiz(null);
+      setQuizResults(null);
+      setLastQuizTopic("");
+    }
   }, [mode, selectedLecture]);
 
   // Auto-trigger for Notes Creator mode - only when BOTH course AND lecture are selected
@@ -163,7 +178,65 @@ const ProfessorAI = () => {
     return NO_MATERIALS_FALLBACK_PHRASES.some(phrase => lowerContent.includes(phrase));
   };
 
+  // Generate quiz using Lovable AI
+  const generateQuiz = async (topic: string) => {
+    setQuizLoading(true);
+    setCurrentQuiz(null);
+    setQuizResults(null);
+    setLastQuizTopic(topic);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-quiz`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            topic,
+            course: getSelectedCourseDisplayName(),
+            numQuestions: 10,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to generate quiz");
+      }
+
+      const quizData: Quiz = await response.json();
+      
+      if (!quizData.questions || quizData.questions.length === 0) {
+        throw new Error("No questions generated");
+      }
+
+      setCurrentQuiz(quizData);
+    } catch (error) {
+      console.error("Quiz generation error:", error);
+      toast({
+        title: "Quiz generation failed",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setQuizLoading(false);
+    }
+  };
+
   const sendMessage = async (content: string, isHidden = false) => {
+    // In Quiz mode, treat the message as a quiz topic request
+    if (mode === "Quiz") {
+      generateQuiz(content);
+      // Add to messages for display
+      if (!isHidden) {
+        setMessages(prev => [...prev, { role: "user", content }]);
+      }
+      return;
+    }
+
     if (!selectedCourse) return;
 
     const userMessage: Message = { role: "user", content };
@@ -300,7 +373,7 @@ const ProfessorAI = () => {
   };
 
   const handleStartQuiz = () => {
-    sendMessage("Start Quiz");
+    // No longer used - quiz starts when user types a topic
   };
 
   const handleCourseSelect = (courseId: string) => {
@@ -308,6 +381,8 @@ const ProfessorAI = () => {
     setSelectedLecture(null);
     setMessages([]);
     setStreamingContent("");
+    setCurrentQuiz(null);
+    setQuizResults(null);
   };
 
   const handleModeChange = (newMode: Mode) => {
@@ -315,6 +390,9 @@ const ProfessorAI = () => {
     setMessages([]);
     setStreamingContent("");
     hasAutoTriggered.current = false;
+    setCurrentQuiz(null);
+    setQuizResults(null);
+    setLastQuizTopic("");
   };
 
   const handleBatchSelect = (batchId: string) => {
@@ -324,12 +402,40 @@ const ProfessorAI = () => {
     setSelectedLecture(null);
     setMessages([]);
     setStreamingContent("");
+    setCurrentQuiz(null);
+    setQuizResults(null);
   };
 
   const handleNewChat = () => {
     setMessages([]);
     setStreamingContent("");
     hasAutoTriggered.current = false;
+    setCurrentQuiz(null);
+    setQuizResults(null);
+    setLastQuizTopic("");
+  };
+
+  const handleQuizComplete = (score: number, total: number) => {
+    setQuizResults({ score, total });
+    setCurrentQuiz(null);
+  };
+
+  const handleQuizClose = () => {
+    setCurrentQuiz(null);
+    setQuizResults(null);
+  };
+
+  const handleRetryQuiz = () => {
+    if (lastQuizTopic) {
+      setQuizResults(null);
+      generateQuiz(lastQuizTopic);
+    }
+  };
+
+  const handleNewQuiz = () => {
+    setCurrentQuiz(null);
+    setQuizResults(null);
+    setMessages([]);
   };
 
   // Show batch selection if not selected
@@ -339,6 +445,102 @@ const ProfessorAI = () => {
         <ProfessorBatchSelection onBatchSelect={handleBatchSelect} />
       </div>
     );
+  }
+
+  // Quiz mode rendering
+  if (mode === "Quiz") {
+    // Show quiz loading
+    if (quizLoading) {
+      return (
+        <div className="flex flex-col h-screen bg-background text-foreground">
+          <ProfessorHeader
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+            selectedCourse={selectedCourse}
+            onCourseChange={handleCourseSelect}
+            selectedMode={mode}
+            onModeChange={handleModeChange}
+            selectedBatch={selectedBatch}
+            onBatchChange={handleBatchSelect}
+            courses={availableCourses}
+          />
+          <ProfessorDrawer
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            onNewChat={handleNewChat}
+          />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+              <p className="text-muted-foreground">Generating your quiz...</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Show quiz results
+    if (quizResults) {
+      return (
+        <div className="flex flex-col h-screen bg-background text-foreground">
+          <ProfessorHeader
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+            selectedCourse={selectedCourse}
+            onCourseChange={handleCourseSelect}
+            selectedMode={mode}
+            onModeChange={handleModeChange}
+            selectedBatch={selectedBatch}
+            onBatchChange={handleBatchSelect}
+            courses={availableCourses}
+          />
+          <ProfessorDrawer
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            onNewChat={handleNewChat}
+          />
+          <div className="flex-1 flex items-center justify-center p-4">
+            <QuizResults
+              score={quizResults.score}
+              total={quizResults.total}
+              onRetry={handleRetryQuiz}
+              onNewQuiz={handleNewQuiz}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // Show active quiz
+    if (currentQuiz) {
+      return (
+        <div className="flex flex-col h-screen bg-background text-foreground">
+          <ProfessorHeader
+            sidebarOpen={sidebarOpen}
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+            selectedCourse={selectedCourse}
+            onCourseChange={handleCourseSelect}
+            selectedMode={mode}
+            onModeChange={handleModeChange}
+            selectedBatch={selectedBatch}
+            onBatchChange={handleBatchSelect}
+            courses={availableCourses}
+          />
+          <ProfessorDrawer
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            onNewChat={handleNewChat}
+          />
+          <div className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
+            <QuizCard
+              quiz={currentQuiz}
+              onComplete={handleQuizComplete}
+              onClose={handleQuizClose}
+            />
+          </div>
+        </div>
+      );
+    }
   }
 
   return (
@@ -367,7 +569,7 @@ const ProfessorAI = () => {
       <div className="flex-1 overflow-hidden">
         <ProfessorChat
           messages={messages}
-          isLoading={isLoading}
+          isLoading={isLoading || quizLoading}
           streamingContent={streamingContent}
           selectedLecture={selectedLecture}
           selectedCourse={selectedCourse}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Loader2, PlayCircle, MessageSquare, ArrowUp, GraduationCap, Search, ChevronDown } from "lucide-react";
+import { Sparkles, Loader2, MessageSquare, ArrowUp, Search, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfessorMessage } from "./ProfessorMessage";
 import {
@@ -31,6 +31,13 @@ const modeDescriptions: Record<Mode, string> = {
   "Study": "Ask questions and learn through guided discovery",
 };
 
+const quizSuggestions = [
+  "Quiz me on machine learning basics",
+  "I need a quiz on elasticity",
+  "Test me on supply and demand",
+  "Create a quiz about calculus derivatives",
+];
+
 export const ProfessorChat = ({
   messages,
   isLoading,
@@ -57,7 +64,10 @@ export const ProfessorChat = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || !selectedCourse) return;
+    if (!input.trim() || isLoading) return;
+    
+    // For Quiz mode, don't require course selection
+    if (mode !== "Quiz" && !selectedCourse) return;
     
     onSendMessage(input.trim());
     setInput("");
@@ -75,8 +85,9 @@ export const ProfessorChat = ({
   const needsLecture = mode === "Notes Creator";
   const hasSpecificLecture = selectedLecture && selectedLecture !== "__all__";
   
-  // Can chat if: course selected AND (not Notes Creator OR has specific lecture)
-  const canChat = selectedCourse && (!needsLecture || hasSpecificLecture);
+  // Quiz mode doesn't require course selection
+  // Can chat if: quiz mode OR (course selected AND (not Notes Creator OR has specific lecture))
+  const canChat = mode === "Quiz" || (selectedCourse && (!needsLecture || hasSpecificLecture));
   const isInputDisabled = !canChat || isLoading;
 
   // Display text for lecture
@@ -99,7 +110,7 @@ export const ProfessorChat = ({
                 {mode === "Notes Creator" ? (
                   <Sparkles className="w-7 h-7 md:w-10 md:h-10 text-primary" />
                 ) : mode === "Quiz" ? (
-                  <MessageSquare className="w-7 h-7 md:w-10 md:h-10 text-primary" />
+                  <Brain className="w-7 h-7 md:w-10 md:h-10 text-primary" />
                 ) : (
                   <Search className="w-7 h-7 md:w-10 md:h-10 text-primary" />
                 )}
@@ -108,21 +119,21 @@ export const ProfessorChat = ({
               {/* Welcome text */}
               <div className="space-y-2">
                 <h1 className="text-2xl md:text-4xl font-semibold text-foreground">
-                  {!selectedCourse
+                  {mode === "Quiz"
+                    ? "What topic should I quiz you on?"
+                    : !selectedCourse
                     ? "What would you like to learn?"
                     : mode === "Notes Creator" && !hasSpecificLecture
                     ? "Select a Lecture for Notes"
-                    : mode === "Quiz"
-                    ? "Ready to Test Your Knowledge?"
                     : "What would you like to learn?"}
                 </h1>
                 <p className="text-muted-foreground text-base md:text-lg px-2">
-                  {!selectedCourse
+                  {mode === "Quiz"
+                    ? "Type any topic and I'll generate a quiz for you"
+                    : !selectedCourse
                     ? "Select a course to get started"
                     : mode === "Notes Creator" && !hasSpecificLecture
                     ? "Notes Creator requires a specific lecture selection"
-                    : mode === "Quiz"
-                    ? "Click the button below to start your quiz session"
                     : `Ready to help you learn about ${getLectureDisplayText()}`}
                 </p>
               </div>
@@ -161,22 +172,10 @@ export const ProfessorChat = ({
                   </Select>
                 </div>
               )}
-              
-              {/* Quiz Start Button */}
-              {mode === "Quiz" && selectedCourse && !isLoading && (
-                <Button
-                  onClick={onStartQuiz}
-                  size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 shadow-lg hover:shadow-[var(--shadow-hover)] transition-all"
-                >
-                  <PlayCircle className="w-5 h-5" />
-                  Start Quiz
-                </Button>
-              )}
             </div>
             
-            {/* Input area */}
-            {canChat && mode !== "Notes Creator" && (
+            {/* Input area for Quiz mode and Study mode */}
+            {(mode === "Quiz" || canChat) && mode !== "Notes Creator" && (
               <div className="w-full max-w-3xl mt-8 md:mt-12 px-2">
                 <form onSubmit={handleSubmit}>
                   <div className="flex items-center gap-2 bg-secondary/80 rounded-2xl border border-border/50 px-4 py-3 shadow-lg backdrop-blur-sm transition-all focus-within:border-primary/50 focus-within:shadow-[var(--shadow-glow)]">
@@ -185,13 +184,13 @@ export const ProfessorChat = ({
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      placeholder={mode === "Quiz" ? "Type your answer..." : "Ask anything..."}
-                      disabled={isInputDisabled}
+                      placeholder={mode === "Quiz" ? "What topic should I quiz you on?" : "Ask anything..."}
+                      disabled={isLoading}
                       className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-sm min-w-0"
                     />
                     <Button
                       type="submit"
-                      disabled={isInputDisabled || !input.trim()}
+                      disabled={isLoading || !input.trim()}
                       size="sm"
                       className="h-8 w-8 p-0 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30"
                     >
@@ -205,24 +204,22 @@ export const ProfessorChat = ({
                 </form>
                 
                 {/* Quick suggestions */}
-                {mode === "Study" && (
-                  <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-6">
-                    {["Explain the key concepts", "Help me understand", "Give me examples"].map(suggestion => (
-                      <button
-                        key={suggestion}
-                        onClick={() => setInput(suggestion)}
-                        className="px-3 md:px-4 py-2 text-xs md:text-sm rounded-full bg-secondary/50 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all whitespace-nowrap"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <div className="flex flex-wrap justify-center gap-2 mt-4 md:mt-6">
+                  {(mode === "Quiz" ? quizSuggestions : ["Explain the key concepts", "Help me understand", "Give me examples"]).map(suggestion => (
+                    <button
+                      key={suggestion}
+                      onClick={() => setInput(suggestion)}
+                      className="px-3 md:px-4 py-2 text-xs md:text-sm rounded-full bg-secondary/50 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all whitespace-nowrap"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Show input placeholder when no course selected */}
-            {!selectedCourse && (
+            {/* Show input placeholder when no course selected (not for Quiz mode) */}
+            {!selectedCourse && mode !== "Quiz" && (
               <div className="w-full max-w-3xl mt-8 md:mt-12 px-2">
                 <div className="flex items-center gap-2 bg-secondary/80 rounded-2xl border border-border/50 px-4 py-3 opacity-50">
                   <span className="flex-1 text-muted-foreground text-sm">Select a course first...</span>
@@ -263,7 +260,9 @@ export const ProfessorChat = ({
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm">Thinking...</span>
+                <span className="text-sm">
+                  {mode === "Quiz" ? "Generating quiz..." : "Thinking..."}
+                </span>
               </div>
             </div>
           )}
@@ -282,10 +281,10 @@ export const ProfessorChat = ({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  !selectedCourse
+                  mode === "Quiz"
+                    ? "What topic should I quiz you on?"
+                    : !selectedCourse
                     ? "Select a course first..."
-                    : mode === "Quiz"
-                    ? "Type your answer (A, B, C, or D)..."
                     : "Ask anything..."
                 }
                 disabled={isInputDisabled}
