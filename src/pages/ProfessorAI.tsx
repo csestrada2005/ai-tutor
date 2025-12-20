@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ProfessorSidebar } from "@/components/professor-ai/ProfessorSidebar";
 import { ProfessorChat } from "@/components/professor-ai/ProfessorChat";
 import { ProfessorBatchSelection } from "@/components/professor-ai/ProfessorBatchSelection";
+import { toast } from "@/hooks/use-toast";
 
 export type Mode = "Notes Creator" | "Quiz" | "Study";
 
@@ -16,44 +17,57 @@ export interface Lecture {
   class_name?: string;
 }
 
-// Define courses per batch (id = class_name key, name = display_name)
-const COURSES_BY_BATCH: Record<string, { id: string; name: string }[]> = {
+// Course interface with db_key for backend communication
+export interface Course {
+  id: string;      // db_key for backend
+  name: string;    // display name
+}
+
+// Define courses per batch from persona.json (id = db_key, name = display_name)
+const COURSES_BY_BATCH: Record<string, Course[]> = {
   "2029": [
     { id: "AIML", name: "How do machines see, hear or speak" },
-    { id: "Excel", name: "How to get comfortable with excel" },
-    { id: "Statistics", name: "How to use statistics to build a better business" },
     { id: "Calculus", name: "Calculus" },
-    { id: "Dropshipping", name: "How to build a dropshipping business" },
+    { id: "Dropshipping", name: "Dropshipping" },
     { id: "PublicSpeaking", name: "How to own a stage" },
+    { id: "OOP", name: "OOP" },
+    { id: "DRP101", name: "How to build a dropshipping business" },
+    { id: "FinanceBasics", name: "How to understand basic financial terminology" },
+    { id: "LA101", name: "How to decode global trends and navigate economic transformations" },
+    { id: "MarketAnalysis", name: "How to read market for better decision making" },
     { id: "Startup", name: "How to validate, shape, and launch a startup" },
     { id: "Networking", name: "How to network effortlessly" },
-    { id: "OOP", name: "Object-Oriented Programming" },
-    { id: "MarketAnalysis", name: "How to read market for better decision making" },
+    { id: "Excel", name: "How to use excel" },
+    { id: "Statistics", name: "How to use statistics to build a better business" },
     { id: "MarketGaps", name: "How to identify gaps in the market" },
     { id: "MetaMarketing", name: "How to execute digital marketing on Meta" },
     { id: "CRO", name: "How to execute CRO and increase AOV" },
-    { id: "FinanceBasics", name: "How to understand basic financial terminology" },
-    { id: "HowToDecodeGlobalTrendsAndNavigateEconomicTransformations", name: "How to decode global trends and navigate economic transformations" },
   ],
   "2028": [
-    { id: "Web3Innovation", name: "How to leverage web3 for entrepreneurial innovation" },
-    { id: "BusinessMetrics", name: "How to use business metrics to enhance efficiency and drive innovation" },
-    { id: "FundraisingStartups", name: "How can founders raise money for their start-ups" },
-    { id: "IPProtection", name: "How to protect your ideas and innovations" },
-    { id: "AIPython", name: "How to design AI-powered solutions with Python" },
-    { id: "KickstarterCampaign", name: "How to build a Kickstarter campaign?" },
-    { id: "ProductDesignKickstarter", name: "How to develop and design a product for kickstarter success?" },
-    { id: "FundraisingVideo", name: "How to craft a fundraising video that converts?" },
+    { id: "MarketResearch", name: "Market Research" },
+    { id: "Kickstarter", name: "Kickstarter Campaign" },
+    { id: "Prototyping", name: "Prototyping" },
+    { id: "FundraisingVideo", name: "Fundraising Video" },
     { id: "CapstoneHours", name: "Capstone Hours" },
-    { id: "PublicSpeakingLevel2", name: "How to own a stage - Level 2" },
-    { id: "CopywritingSells", name: "How to craft compelling copy that sells and builds trust" },
-    { id: "CompetitiveStrategy", name: "How can my business win against the competition" },
-    { id: "NUSImmersion", name: "Strategy and innovation immersion at NUS" },
-    { id: "SingaporePolicy", name: "Understanding modern Southeast Asia through Singaporean public policy" },
-    { id: "EconomicForces", name: "How to understand economic forces that shape the world" },
-    { id: "CustomerInsights", name: "How to uncover what customers really want" },
+    { id: "PublicSpeaking", name: "Public Speaking" },
+    { id: "Copywriting", name: "Copywriting" },
+    { id: "Web3", name: "Web3 & Blockchain" },
+    { id: "BusinessMetrics", name: "Business Metrics" },
+    { id: "VCFundraising", name: "VC Fundraising" },
+    { id: "IPLaw", name: "IP Law" },
+    { id: "PythonAI", name: "Python for AI" },
+    { id: "Strategy", name: "Business Strategy" },
+    { id: "InnovationImmersion", name: "Innovation Immersion" },
+    { id: "SEAsiaPolicy", name: "SE Asia Policy" },
+    { id: "Macroeconomics", name: "Macroeconomics" },
   ],
 };
+
+const NO_MATERIALS_FALLBACK_PHRASES = [
+  "couldn't find relevant materials",
+  "no relevant materials found",
+  "content hasn't been uploaded yet",
+];
 
 const ProfessorAI = () => {
   const [mode, setMode] = useState<Mode>("Study");
@@ -67,12 +81,13 @@ const ProfessorAI = () => {
   const [lecturesError, setLecturesError] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingContent, setStreamingContent] = useState<string>("");
   const hasAutoTriggered = useRef(false);
 
   // Get available courses for selected batch
   const availableCourses = selectedBatch ? COURSES_BY_BATCH[selectedBatch] || [] : [];
   
-  // Filter lectures by selected course (matching class_name)
+  // Filter lectures by selected course (matching class_name to db_key)
   const filteredLectures = selectedCourse 
     ? lectures.filter(lecture => lecture.class_name === selectedCourse)
     : [];
@@ -90,6 +105,7 @@ const ProfessorAI = () => {
           {
             headers: {
               "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              "x-cohort-id": selectedBatch,
             },
           }
         );
@@ -121,6 +137,7 @@ const ProfessorAI = () => {
   // Clear chat when mode or lecture changes
   useEffect(() => {
     setMessages([]);
+    setStreamingContent("");
     hasAutoTriggered.current = false;
   }, [mode, selectedLecture]);
 
@@ -138,8 +155,14 @@ const ProfessorAI = () => {
     return course?.name || selectedCourse;
   };
 
+  // Check if response contains "no materials found" fallback
+  const checkForNoMaterialsFallback = (content: string): boolean => {
+    const lowerContent = content.toLowerCase();
+    return NO_MATERIALS_FALLBACK_PHRASES.some(phrase => lowerContent.includes(phrase));
+  };
+
   const sendMessage = async (content: string, isHidden = false) => {
-    if (!selectedLecture || !selectedCourse) return;
+    if (!selectedCourse) return;
 
     const userMessage: Message = { role: "user", content };
     
@@ -149,8 +172,12 @@ const ProfessorAI = () => {
     }
     
     setIsLoading(true);
+    setStreamingContent("");
 
     try {
+      // Send selectedLecture as null or empty string if "All Lectures" is selected
+      const lectureToSend = selectedLecture === "__all__" ? null : selectedLecture;
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/professor-chat`,
         {
@@ -158,12 +185,13 @@ const ProfessorAI = () => {
           headers: {
             "Content-Type": "application/json",
             "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            "x-cohort-id": selectedBatch || "2029",
           },
           body: JSON.stringify({
             messages: [...messages, userMessage],
             mode,
-            selectedCourse: getSelectedCourseDisplayName(), // Send the display name
-            selectedLecture, // The lecture title
+            selectedCourse: selectedCourse, // Send the db_key
+            selectedLecture: lectureToSend, // The lecture title or null
             cohort_id: selectedBatch,
           }),
         }
@@ -173,13 +201,90 @@ const ProfessorAI = () => {
         throw new Error("Failed to get response");
       }
 
-      const data = await response.json();
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.response || data.content || "No response received.",
-      };
+      // Check if streaming response
+      const contentType = response.headers.get("content-type");
       
-      setMessages(prev => [...prev, assistantMessage]);
+      if (contentType?.includes("text/event-stream") || contentType?.includes("text/plain")) {
+        // Handle streaming response
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = "";
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            
+            // Parse SSE events
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') continue;
+                
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content || parsed.content || parsed.chunk || data;
+                  if (typeof content === 'string') {
+                    accumulatedContent += content;
+                    setStreamingContent(accumulatedContent);
+                  }
+                } catch {
+                  // If not valid JSON, treat as raw text
+                  if (data.trim() && data !== '[DONE]') {
+                    accumulatedContent += data;
+                    setStreamingContent(accumulatedContent);
+                  }
+                }
+              } else if (line.trim() && !line.startsWith(':')) {
+                // Handle non-SSE text chunks
+                accumulatedContent += line;
+                setStreamingContent(accumulatedContent);
+              }
+            }
+          }
+        }
+
+        // Finalize streaming message
+        if (accumulatedContent) {
+          // Check for no materials fallback
+          if (checkForNoMaterialsFallback(accumulatedContent)) {
+            toast({
+              title: "No materials found",
+              description: `Check if you're in the correct cohort (currently: ${selectedBatch}). Try switching between 2028 and 2029.`,
+              variant: "destructive",
+            });
+          }
+
+          setMessages(prev => [
+            ...prev,
+            { role: "assistant", content: accumulatedContent },
+          ]);
+        }
+        setStreamingContent("");
+      } else {
+        // Handle JSON response
+        const data = await response.json();
+        const responseContent = data.response || data.content || "No response received.";
+        
+        // Check for no materials fallback
+        if (checkForNoMaterialsFallback(responseContent)) {
+          toast({
+            title: "No materials found",
+            description: `Check if you're in the correct cohort (currently: ${selectedBatch}). Try switching between 2028 and 2029.`,
+            variant: "destructive",
+          });
+        }
+
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: responseContent,
+        };
+        
+        setMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error) {
       console.error("Chat error:", error);
       setMessages(prev => [
@@ -188,6 +293,7 @@ const ProfessorAI = () => {
       ]);
     } finally {
       setIsLoading(false);
+      setStreamingContent("");
     }
   };
 
@@ -199,6 +305,13 @@ const ProfessorAI = () => {
     setSelectedCourse(courseId);
     setSelectedLecture(null);
     setMessages([]);
+    setStreamingContent("");
+  };
+
+  const handleLectureSelect = (lectureValue: string) => {
+    setSelectedLecture(lectureValue);
+    setMessages([]);
+    setStreamingContent("");
   };
 
   const handleBatchSelect = (batchId: string) => {
@@ -207,6 +320,7 @@ const ProfessorAI = () => {
     setSelectedCourse(null);
     setSelectedLecture(null);
     setMessages([]);
+    setStreamingContent("");
   };
 
   // Show batch selection if not selected
@@ -224,7 +338,7 @@ const ProfessorAI = () => {
         mode={mode}
         setMode={setMode}
         selectedLecture={selectedLecture}
-        setSelectedLecture={setSelectedLecture}
+        setSelectedLecture={handleLectureSelect}
         selectedCourse={selectedCourse}
         setSelectedCourse={handleCourseSelect}
         selectedBatch={selectedBatch}
@@ -238,7 +352,9 @@ const ProfessorAI = () => {
       <ProfessorChat
         messages={messages}
         isLoading={isLoading}
+        streamingContent={streamingContent}
         selectedLecture={selectedLecture}
+        selectedCourse={selectedCourse}
         mode={mode}
         onSendMessage={sendMessage}
         onStartQuiz={handleStartQuiz}

@@ -3,6 +3,7 @@ import type { Message } from "@/pages/ProfessorAI";
 
 interface ProfessorMessageProps {
   message: Message;
+  isStreaming?: boolean;
 }
 
 // Simple markdown renderer for headers and basic formatting
@@ -79,7 +80,7 @@ const renderMarkdown = (content: string) => {
   });
 };
 
-export const ProfessorMessage = ({ message }: ProfessorMessageProps) => {
+export const ProfessorMessage = ({ message, isStreaming = false }: ProfessorMessageProps) => {
   const isUser = message.role === "user";
 
   return (
@@ -112,6 +113,9 @@ export const ProfessorMessage = ({ message }: ProfessorMessageProps) => {
         ) : (
           <div className="text-sm">
             {renderMarkdown(message.content)}
+            {isStreaming && (
+              <span className="inline-block w-2 h-4 bg-primary/60 animate-pulse ml-0.5" />
+            )}
           </div>
         )}
       </div>
