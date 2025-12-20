@@ -8,12 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Mode, Lecture } from "@/pages/ProfessorAI";
-
-interface Course {
-  id: string;
-  name: string;
-}
+import type { Mode, Lecture, Course } from "@/pages/ProfessorAI";
 
 interface ProfessorSidebarProps {
   mode: Mode;
@@ -76,9 +71,12 @@ export const ProfessorSidebar = ({
     if (!selectedCourse) return "Select a course first";
     if (lecturesLoading) return "Loading lectures...";
     if (lecturesError) return "Failed to load lectures";
-    if (!hasLectures) return "No specific sessions found for this course";
     return "Select a Lecture...";
   };
+
+  // Check if a specific lecture is selected (not "All Lectures")
+  const hasSpecificLecture = selectedLecture && selectedLecture !== "__all__";
+
   return (
     <aside className="w-72 min-w-72 h-full bg-card border-r border-border flex flex-col">
       {/* Header */}
@@ -155,16 +153,38 @@ export const ProfessorSidebar = ({
               <SelectValue placeholder={getLecturePlaceholderText()} />
             )}
           </SelectTrigger>
-          {hasLectures && (
+          {selectedCourse && (
             <SelectContent className="bg-card border-border max-h-[300px]">
-              {lectures.map((lecture) => (
-                <SelectItem key={lecture.id} value={lecture.title}>
-                  <span className="text-sm">{lecture.title}</span>
-                </SelectItem>
-              ))}
+              {/* All Lectures option - always show when course is selected */}
+              <SelectItem value="__all__">
+                <span className="text-sm font-medium">All Lectures</span>
+              </SelectItem>
+              
+              {/* Individual lectures */}
+              {hasLectures ? (
+                lectures.map((lecture) => (
+                  <SelectItem key={lecture.id} value={lecture.title}>
+                    <span className="text-sm">{lecture.title}</span>
+                  </SelectItem>
+                ))
+              ) : (
+                !lecturesLoading && !lecturesError && (
+                  <div className="px-2 py-3 text-xs text-muted-foreground text-center">
+                    No specific sessions found for this course
+                  </div>
+                )
+              )}
             </SelectContent>
           )}
         </Select>
+
+        {/* Transcript indicator for Notes Creator mode */}
+        {mode === "Notes Creator" && hasSpecificLecture && (
+          <div className="mt-2 flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span>Transcript Available</span>
+          </div>
+        )}
       </div>
 
       {/* Mode Selector */}

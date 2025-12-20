@@ -7,7 +7,9 @@ import type { Mode, Message } from "@/pages/ProfessorAI";
 interface ProfessorChatProps {
   messages: Message[];
   isLoading: boolean;
+  streamingContent?: string;
   selectedLecture: string | null;
+  selectedCourse: string | null;
   mode: Mode;
   onSendMessage: (content: string) => void;
   onStartQuiz: () => void;
@@ -22,7 +24,9 @@ const modeDescriptions: Record<Mode, string> = {
 export const ProfessorChat = ({
   messages,
   isLoading,
+  streamingContent = "",
   selectedLecture,
+  selectedCourse,
   mode,
   onSendMessage,
   onStartQuiz,
@@ -36,11 +40,11 @@ export const ProfessorChat = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, streamingContent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || !selectedLecture) return;
+    if (!input.trim() || isLoading || !selectedCourse) return;
     
     onSendMessage(input.trim());
     setInput("");
@@ -53,7 +57,22 @@ export const ProfessorChat = ({
     }
   };
 
-  const isInputDisabled = !selectedLecture || isLoading;
+  // Disable input if no course selected
+  const isInputDisabled = !selectedCourse || isLoading;
+  
+  // Check if we have a specific lecture selected (not "All Lectures")
+  const hasSpecificLecture = selectedLecture && selectedLecture !== "__all__";
+  const hasAnyLectureSelection = selectedLecture !== null;
+
+  // For Notes Creator, require specific lecture
+  const canStartNotesCreator = mode === "Notes Creator" && hasSpecificLecture;
+  
+  // Display text for lecture
+  const getLectureDisplayText = () => {
+    if (!selectedLecture) return "No lecture selected";
+    if (selectedLecture === "__all__") return "All Lectures";
+    return selectedLecture;
+  };
 
   return (
     <main className="flex-1 flex flex-col h-full bg-background">
@@ -66,7 +85,7 @@ export const ProfessorChat = ({
               {mode} Mode
             </h2>
             <p className="text-sm text-muted-foreground">
-              {selectedLecture || "No lecture selected"}
+              {getLectureDisplayText()}
             </p>
           </div>
           <div className="text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full">
@@ -78,14 +97,18 @@ export const ProfessorChat = ({
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto space-y-4">
-          {messages.length === 0 ? (
+          {messages.length === 0 && !streamingContent ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-20">
               <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                 <MessageSquare className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                {!selectedLecture
-                  ? "Select a Lecture to Begin"
+                {!selectedCourse
+                  ? "Select a Course to Begin"
+                  : !hasAnyLectureSelection
+                  ? "Select a Lecture"
+                  : mode === "Notes Creator" && !hasSpecificLecture
+                  ? "Select a Specific Lecture for Notes"
                   : mode === "Notes Creator"
                   ? "Generating Notes..."
                   : mode === "Quiz"
@@ -93,8 +116,12 @@ export const ProfessorChat = ({
                   : "Ask Away!"}
               </h3>
               <p className="text-muted-foreground max-w-md mb-6">
-                {!selectedLecture
-                  ? "Choose a lecture from the sidebar to start your learning session."
+                {!selectedCourse
+                  ? "Choose a course from the sidebar to start your learning session."
+                  : !hasAnyLectureSelection
+                  ? "Select a lecture or 'All Lectures' to continue."
+                  : mode === "Notes Creator" && !hasSpecificLecture
+                  ? "Notes Creator requires a specific lecture selection, not 'All Lectures'."
                   : mode === "Quiz"
                   ? "Click the button below to start your quiz session."
                   : mode === "Study"
@@ -103,7 +130,7 @@ export const ProfessorChat = ({
               </p>
               
               {/* Quiz Start Button */}
-              {mode === "Quiz" && selectedLecture && messages.length === 0 && !isLoading && (
+              {mode === "Quiz" && hasAnyLectureSelection && messages.length === 0 && !isLoading && (
                 <Button
                   onClick={onStartQuiz}
                   size="lg"
@@ -120,7 +147,15 @@ export const ProfessorChat = ({
                 <ProfessorMessage key={index} message={message} />
               ))}
               
-              {isLoading && (
+              {/* Streaming content display */}
+              {streamingContent && (
+                <ProfessorMessage 
+                  message={{ role: "assistant", content: streamingContent }} 
+                  isStreaming={true}
+                />
+              )}
+              
+              {isLoading && !streamingContent && (
                 <div className="flex items-center gap-3 text-muted-foreground">
                   <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
@@ -145,8 +180,8 @@ export const ProfessorChat = ({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  !selectedLecture
-                    ? "Select a lecture first..."
+                  !selectedCourse
+                    ? "Select a course first..."
                     : mode === "Quiz"
                     ? "Type your answer (A, B, C, or D)..."
                     : "Ask anything..."
@@ -169,9 +204,9 @@ export const ProfessorChat = ({
             </div>
           </form>
           
-          {!selectedLecture && (
+          {!selectedCourse && (
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              ⚠️ Please select a lecture from the sidebar to enable chat
+              ⚠️ Please select a course from the sidebar to enable chat
             </p>
           )}
         </div>
