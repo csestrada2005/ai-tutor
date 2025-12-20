@@ -9,7 +9,7 @@ export interface Message {
   content: string;
 }
 
-const PROFESSOR_API_URL = import.meta.env.VITE_PROFESSOR_API_URL || "";
+const PROFESSOR_API_URL = import.meta.env.VITE_PROFESSOR_API_URL || "https://professor-agent-platform.onrender.com";
 
 const ProfessorAI = () => {
   const [mode, setMode] = useState<Mode>("Study");
