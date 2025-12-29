@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Plus, MessageSquare, Sparkles, X } from "lucide-react";
+import { Plus, MessageSquare, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,7 +42,7 @@ const formatDate = (dateString: string) => {
 
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 7) return `${diffDays} days ago`;
   return date.toLocaleDateString();
 };
 
@@ -129,41 +129,31 @@ export const ProfessorDrawer = ({
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           fixed
           z-50
-          w-[280px] sm:w-72 h-full
+          w-72 h-full
           transition-transform duration-300 ease-in-out
           bg-card border-r border-border
           flex flex-col
         `}
       >
         {/* Header */}
-        <div className="p-3 sm:p-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground text-sm sm:text-base">Professor AI</h2>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Chat History</p>
-              </div>
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary" />
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 sm:hidden"
-              onClick={onClose}
-            >
-              <X className="w-4 h-4" />
-            </Button>
+            <div>
+              <h2 className="font-semibold text-foreground">Professor AI</h2>
+              <p className="text-xs text-muted-foreground">Chat History</p>
+            </div>
           </div>
         </div>
 
         {/* New Chat Button */}
-        <div className="p-2 sm:p-3">
+        <div className="p-3">
           <Button
             onClick={handleNewChat}
             variant="outline"
-            className="w-full justify-start gap-2 bg-secondary/50 hover:bg-secondary border-border/50 h-9 sm:h-10 text-sm"
+            className="w-full justify-start gap-2 bg-secondary/50 hover:bg-secondary border-border/50"
           >
             <Plus className="w-4 h-4" />
             New Chat
@@ -171,20 +161,20 @@ export const ProfessorDrawer = ({
         </div>
 
         {/* Conversation History */}
-        <ScrollArea className="flex-1 px-2 sm:px-3">
+        <ScrollArea className="flex-1 px-3">
           <div className="py-2">
-            <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-2 px-2">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2 px-2">
               Recent Chats
             </p>
             {loading ? (
-              <div className="text-center py-6 sm:py-8 text-muted-foreground">
+              <div className="text-center py-8 text-muted-foreground">
                 <p className="text-sm">Loading...</p>
               </div>
             ) : conversations.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-muted-foreground">
-                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-xs sm:text-sm">No conversations yet</p>
-                <p className="text-[10px] sm:text-xs mt-1">Start a new chat to begin</p>
+              <div className="text-center py-8 text-muted-foreground">
+                <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No conversations yet</p>
+                <p className="text-xs mt-1">Start a new chat to begin</p>
               </div>
             ) : (
               <div className="space-y-1">
@@ -192,24 +182,21 @@ export const ProfessorDrawer = ({
                   <button
                     key={conversation.id}
                     onClick={() => handleSelectConversation(conversation)}
-                    className={`w-full text-left p-2.5 sm:p-3 rounded-lg transition-colors ${
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${
                       activeConversationId === conversation.id
                         ? "bg-primary text-primary-foreground"
-                        : "hover:bg-secondary/70 active:bg-secondary"
+                        : "hover:bg-secondary/70"
                     }`}
                   >
-                    <div className="font-medium truncate text-xs sm:text-sm mb-0.5 sm:mb-1">
+                    <div className="font-medium truncate text-sm mb-1">
                       {conversation.title}
                     </div>
-                    <div className={`text-[10px] sm:text-xs ${
+                    <div className={`text-xs ${
                       activeConversationId === conversation.id 
                         ? "opacity-80" 
                         : "text-muted-foreground"
                     }`}>
-                      <span className="truncate inline-block max-w-[120px] sm:max-w-[150px] align-bottom">
-                        {getDisplayName(conversation.class_id)}
-                      </span>
-                      <span> • {formatDate(conversation.updated_at)}</span>
+                      {getDisplayName(conversation.class_id)} • {formatDate(conversation.updated_at)}
                     </div>
                   </button>
                 ))}
@@ -219,8 +206,8 @@ export const ProfessorDrawer = ({
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-2 sm:p-3 border-t border-border">
-          <p className="text-[10px] sm:text-xs text-center text-muted-foreground">
+        <div className="p-3 border-t border-border">
+          <p className="text-xs text-center text-muted-foreground">
             Powered by RAG Technology
           </p>
         </div>

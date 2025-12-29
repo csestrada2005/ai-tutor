@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { ProfessorChat } from "@/components/professor-ai/ProfessorChat";
 import { ProfessorBatchSelection } from "@/components/professor-ai/ProfessorBatchSelection";
 import { ProfessorHeader } from "@/components/professor-ai/ProfessorHeader";
 import { ProfessorDrawer } from "@/components/professor-ai/ProfessorDrawer";
 import { QuizCard, Quiz } from "@/components/professor-ai/QuizCard";
 import { QuizResults } from "@/components/professor-ai/QuizResults";
-import { FeedbackDialog } from "@/components/FeedbackDialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -77,7 +75,6 @@ const NO_MATERIALS_FALLBACK_PHRASES = [
 ];
 
 const ProfessorAI = () => {
-  const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("Study");
   const [selectedLecture, setSelectedLecture] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
@@ -99,7 +96,6 @@ const ProfessorAI = () => {
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizResults, setQuizResults] = useState<{ score: number; total: number } | null>(null);
   const [lastQuizTopic, setLastQuizTopic] = useState<string>("");
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // Get available courses for selected batch
   const availableCourses = selectedBatch ? COURSES_BY_BATCH[selectedBatch] || [] : [];
@@ -481,24 +477,6 @@ const ProfessorAI = () => {
     setMessages([]);
   };
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate("/auth");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleFeedbackClick = () => {
-    setFeedbackOpen(true);
-  };
-
   // Show batch selection if not selected
   if (!selectedBatch) {
     return (
@@ -524,8 +502,6 @@ const ProfessorAI = () => {
             selectedBatch={selectedBatch}
             onBatchChange={handleBatchSelect}
             courses={availableCourses}
-            onLogout={handleLogout}
-            onFeedbackClick={handleFeedbackClick}
           />
           <ProfessorDrawer
             isOpen={sidebarOpen}
@@ -558,8 +534,6 @@ const ProfessorAI = () => {
             selectedBatch={selectedBatch}
             onBatchChange={handleBatchSelect}
             courses={availableCourses}
-            onLogout={handleLogout}
-            onFeedbackClick={handleFeedbackClick}
           />
           <ProfessorDrawer
             isOpen={sidebarOpen}
@@ -594,8 +568,6 @@ const ProfessorAI = () => {
             selectedBatch={selectedBatch}
             onBatchChange={handleBatchSelect}
             courses={availableCourses}
-            onLogout={handleLogout}
-            onFeedbackClick={handleFeedbackClick}
           />
           <ProfessorDrawer
             isOpen={sidebarOpen}
@@ -629,12 +601,7 @@ const ProfessorAI = () => {
         selectedBatch={selectedBatch}
         onBatchChange={handleBatchSelect}
         courses={availableCourses}
-        onLogout={handleLogout}
-        onFeedbackClick={handleFeedbackClick}
       />
-
-      {/* Feedback Dialog */}
-      <FeedbackDialog open={feedbackOpen} onOpenChange={setFeedbackOpen} />
 
       {/* Drawer */}
       <ProfessorDrawer
