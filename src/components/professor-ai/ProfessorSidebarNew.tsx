@@ -99,7 +99,16 @@ export const ProfessorSidebarNew = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserEmail(user.email);
-        setUserName(user.user_metadata?.full_name || user.user_metadata?.name);
+        // Try multiple metadata fields for name
+        const nameFromMetadata = 
+          user.user_metadata?.full_name || 
+          user.user_metadata?.name ||
+          user.user_metadata?.display_name ||
+          user.user_metadata?.preferred_username;
+        
+        // If no name in metadata, use email prefix as display name
+        const displayName = nameFromMetadata || user.email?.split('@')[0];
+        setUserName(displayName);
       }
     };
     loadUser();
