@@ -65,28 +65,24 @@ export const ProfessorHeader = ({
   const termOptions = TERM_OPTIONS_BY_BATCH[selectedBatch] || [];
   const selectedTermLabel = termOptions.find(t => t.value === selectedTerm)?.label || selectedTerm;
 
-  return <div className="bg-background border-b border-border/50 py-2 px-3 md:px-4">
-      <div className="flex justify-between items-center">
-        {/* Left side - Menu (hamburger for mobile) and Title */}
-        <div className="flex items-center gap-2">
-          {/* Mobile hamburger menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggleSidebar}
-            className="h-9 w-9 md:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">AskTETR</span>
-          </div>
-        </div>
+  return (
+    <div className="bg-background border-b border-border/50 py-2 px-3 md:px-4">
+      <div className="flex items-center gap-2">
+        {/* Mobile hamburger menu button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggleSidebar}
+          className="h-9 w-9 shrink-0 md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        
+        {/* Logo */}
+        <span className="text-lg font-bold text-primary shrink-0">AskTETR</span>
 
-        {/* Center - Selectors (hidden on mobile, shown in drawer) */}
+        {/* Desktop selectors - centered */}
         <div className="hidden md:flex items-center gap-2 flex-1 justify-center max-w-3xl px-4">
-          {/* Course Selector - clickable to open course selection */}
           <Button
             variant="outline"
             className="w-[220px] bg-secondary/50 border-border/50 text-sm h-9 justify-start"
@@ -97,19 +93,19 @@ export const ProfessorHeader = ({
             </span>
           </Button>
 
-          {/* Mode Selector */}
           <Select value={selectedMode} onValueChange={v => onModeChange(v as Mode)}>
             <SelectTrigger className="w-[100px] bg-secondary/50 border-border/50 text-sm h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover border-border">
-              {modeOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>
+              {modeOptions.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
-                </SelectItem>)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
-          {/* Term selector */}
           <Select value={selectedTerm} onValueChange={onTermChange}>
             <SelectTrigger className="w-[90px] bg-secondary/50 border-border/50 text-sm h-9">
               <span className="truncate">{selectedTermLabel}</span>
@@ -123,7 +119,6 @@ export const ProfessorHeader = ({
             </SelectContent>
           </Select>
 
-          {/* Batch selector */}
           <Select value={selectedBatch} onValueChange={onBatchChange}>
             <SelectTrigger className="w-[90px] bg-secondary/50 border-border/50 text-sm h-9">
               <span className="truncate">{selectedBatch}</span>
@@ -135,16 +130,28 @@ export const ProfessorHeader = ({
           </Select>
         </div>
 
-        {/* Right side - Mobile selectors visible on mobile */}
-        <div className="flex md:hidden items-center gap-1">
-          {/* Compact batch selector on mobile */}
-          <Select value={selectedBatch} onValueChange={onBatchChange}>
-            <SelectTrigger className="w-[70px] bg-secondary/50 border-border/50 text-xs h-8">
-              <span className="truncate">{selectedBatch}</span>
+        {/* Mobile selectors - single row after logo */}
+        <div className="flex md:hidden items-center gap-1.5 flex-1 overflow-x-auto min-w-0">
+          <Button
+            variant="outline"
+            className="flex-1 min-w-0 bg-secondary/50 border-border/50 text-xs h-8 justify-start"
+            onClick={onOpenCourseSelection}
+          >
+            <span className="truncate">
+              {selectedCourseDisplay || "Select course"}
+            </span>
+          </Button>
+
+          <Select value={selectedMode} onValueChange={v => onModeChange(v as Mode)}>
+            <SelectTrigger className="w-[65px] shrink-0 bg-secondary/50 border-border/50 text-xs h-8">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover border-border">
-              <SelectItem value="2029">2029</SelectItem>
-              <SelectItem value="2028">2028</SelectItem>
+              {modeOptions.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -152,45 +159,6 @@ export const ProfessorHeader = ({
         {/* Desktop right side placeholder for balance */}
         <div className="hidden md:block w-[100px]" />
       </div>
-
-      {/* Mobile-only second row with course, mode, and term selectors */}
-      <div className="flex md:hidden items-center gap-2 mt-2 pt-2 border-t border-border/30">
-        {/* Course Selector - clickable to open course selection */}
-        <Button
-          variant="outline"
-          className="flex-1 bg-secondary/50 border-border/50 text-xs h-8 justify-start"
-          onClick={onOpenCourseSelection}
-        >
-          <span className="truncate">
-            {selectedCourseDisplay || "Select course"}
-          </span>
-        </Button>
-
-        {/* Mode Selector */}
-        <Select value={selectedMode} onValueChange={v => onModeChange(v as Mode)}>
-          <SelectTrigger className="w-[70px] bg-secondary/50 border-border/50 text-xs h-8">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
-            {modeOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>)}
-          </SelectContent>
-        </Select>
-
-        {/* Term Selector */}
-        <Select value={selectedTerm} onValueChange={onTermChange}>
-          <SelectTrigger className="w-[70px] bg-secondary/50 border-border/50 text-xs h-8">
-            <span className="truncate">{selectedTermLabel}</span>
-          </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
-            {termOptions.map(term => (
-              <SelectItem key={term.value} value={term.value}>
-                {term.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </div>;
+    </div>
+  );
 };
