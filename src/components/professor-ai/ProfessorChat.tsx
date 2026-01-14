@@ -61,6 +61,7 @@ export const ProfessorChat = ({
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [lastUserQuery, setLastUserQuery] = useState<string>("");
 
   const scrollToBottom = () => {
@@ -81,6 +82,10 @@ export const ProfessorChat = ({
     setLastUserQuery(input.trim());
     onSendMessage(input.trim());
     setInput("");
+    // Reset textarea height after submit
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -271,20 +276,26 @@ export const ProfessorChat = ({
                     </Button>
                     
                     <div className="relative flex-1">
-                      <input
-                        type="text"
+                      <textarea
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                        onChange={(e) => {
+                          setInput(e.target.value);
+                          // Auto-resize textarea
+                          e.target.style.height = 'auto';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+                        }}
                         onKeyDown={handleKeyDown}
                         placeholder={mode === "Quiz" ? "What topic should I quiz you on?" : "Ask anything..."}
                         disabled={isLoading}
-                        className="w-full bg-secondary/60 backdrop-blur-md border border-border/50 rounded-full px-6 py-4 pr-14 text-chat-text placeholder:text-chat-text-secondary text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                        rows={1}
+                        className="w-full bg-secondary/60 backdrop-blur-md border border-border/50 rounded-2xl px-6 py-4 pr-14 text-chat-text placeholder:text-chat-text-secondary text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all resize-none overflow-y-auto max-h-[200px]"
+                        style={{ minHeight: '56px' }}
                       />
                       <Button
                         type="submit"
                         disabled={isLoading || !input.trim()}
                         size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 p-0 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-30 shadow-md"
+                        className="absolute right-2 bottom-2 h-10 w-10 p-0 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-30 shadow-md"
                       >
                         {isLoading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -348,9 +359,9 @@ export const ProfessorChat = ({
 
   // Chat mode with messages
   return (
-    <main className="relative flex flex-col h-full bg-background overflow-hidden">
-      {/* Messages area - takes full height minus input area height */}
-      <div className="flex-1 overflow-y-auto pb-36" style={{ minHeight: 0 }}>
+    <main className="flex flex-col h-full bg-background overflow-hidden">
+      {/* Messages area - flex-1 to take available space */}
+      <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
         <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 space-y-8">
           {messages.map((message, index) => {
             // Find the preceding user message for feedback context
@@ -396,8 +407,8 @@ export const ProfessorChat = ({
         </div>
       </div>
 
-      {/* Fixed input area at bottom - absolutely positioned to prevent jumping */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-border/30 bg-background/95 backdrop-blur-xl p-4">
+      {/* Input area at bottom - uses flex shrink-0 to stay in place */}
+      <div className="shrink-0 border-t border-border/30 bg-background/95 backdrop-blur-xl p-4">
         <div className="max-w-3xl mx-auto space-y-2">
           {/* Uploaded file indicator */}
           {uploadedFile && (
@@ -437,10 +448,15 @@ export const ProfessorChat = ({
               </Button>
               
               <div className="relative flex-1">
-                <input
-                  type="text"
+                <textarea
+                  ref={textareaRef}
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    // Auto-resize textarea
+                    e.target.style.height = 'auto';
+                    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+                  }}
                   onKeyDown={handleKeyDown}
                   placeholder={
                     mode === "Quiz"
@@ -450,13 +466,15 @@ export const ProfessorChat = ({
                       : "Ask anything..."
                   }
                   disabled={isInputDisabled}
-                  className="w-full bg-secondary/70 backdrop-blur-md border border-border/50 rounded-full px-5 py-3.5 pr-14 text-chat-text placeholder:text-chat-text-secondary text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
+                  rows={1}
+                  className="w-full bg-secondary/70 backdrop-blur-md border border-border/50 rounded-2xl px-5 py-3.5 pr-14 text-chat-text placeholder:text-chat-text-secondary text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 resize-none overflow-y-auto max-h-[200px]"
+                  style={{ minHeight: '52px' }}
                 />
                 <Button
                   type="submit"
                   disabled={isInputDisabled || !input.trim()}
                   size="sm"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 p-0 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-30 shadow-md"
+                  className="absolute right-1.5 bottom-1.5 h-9 w-9 p-0 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-30 shadow-md"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
