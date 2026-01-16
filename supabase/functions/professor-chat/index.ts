@@ -21,16 +21,21 @@ serve(async (req) => {
 
     const url = new URL(req.url);
     const endpoint = url.searchParams.get("endpoint");
+    const mode = url.searchParams.get("mode");
     
     // Get cohort from header (default to 2029)
     const cohortId = req.headers.get("x-cohort-id") || "2029";
 
     // Fetch lectures endpoint
     if (endpoint === "lectures") {
-      console.log(`Fetching lectures for cohort: ${cohortId}`);
+      console.log(`Fetching lectures for cohort: ${cohortId} with mode: ${mode}`);
 
       const fetchLectures = async (cohortHeaderValue: string) => {
-        const res = await fetch(`${PROFESSOR_API_URL}/api/lectures`, {
+        const lectureUrl = mode
+          ? `${PROFESSOR_API_URL}/api/lectures?mode=${mode}`
+          : `${PROFESSOR_API_URL}/api/lectures`;
+
+        const res = await fetch(lectureUrl, {
           headers: {
             "x-api-key": apiKey,
             "x-cohort-id": cohortHeaderValue,
