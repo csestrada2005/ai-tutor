@@ -107,6 +107,7 @@ Use clear bullet points and bold text for lists of definitions.`;
       selectedCourse: body.selectedCourse || null,
       selectedLecture: body.selectedLecture === "__all__" ? null : (body.selectedLecture || null),
       cohort_id: body.cohort_id || cohortId,
+      session_id: body.session_id || null,
     };
 
     console.log("Sending to backend:", JSON.stringify(payload));
