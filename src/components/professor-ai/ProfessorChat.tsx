@@ -299,7 +299,6 @@ export const ProfessorChat = ({
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".pdf,.docx,.txt,.md,.xlsx,.xls"
                       onChange={handleFileChange}
                       className="hidden"
                     />
@@ -476,7 +475,6 @@ export const ProfessorChat = ({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf,.docx,.txt,.md,.xlsx,.xls"
                 onChange={handleFileChange}
                 className="hidden"
               />
