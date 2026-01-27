@@ -169,6 +169,9 @@ export const ProfessorChat = ({
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
           method: "POST",
+          headers: {
+            "x-api-key": import.meta.env.VITE_API_KEY || "",
+          },
           body: formData,
         });
 
