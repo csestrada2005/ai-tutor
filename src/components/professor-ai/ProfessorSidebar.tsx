@@ -48,13 +48,6 @@ const modeConfig = [
     emoji: "🎓",
     description: "Socratic learning mode",
   },
-  {
-    value: "Pre-Read" as Mode,
-    label: "Pre-Read",
-    icon: BookOpen,
-    emoji: "📖",
-    description: "Summarize reading materials",
-  },
 ];
 
 export const ProfessorSidebar = ({
