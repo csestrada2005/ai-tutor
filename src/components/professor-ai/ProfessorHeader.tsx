@@ -32,9 +32,6 @@ const modeOptions: {
 }, {
   value: "Notes Creator",
   label: "Notes"
-}, {
-  value: "Pre-Read",
-  label: "Pre-Read"
 }];
 
 // Demo mode: Only Phase 1 of Cohort Alpha is available
