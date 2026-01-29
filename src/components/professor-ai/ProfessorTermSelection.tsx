@@ -40,7 +40,7 @@ export const ProfessorTermSelection = ({
     const allBatches = Object.keys(TERMS_BY_BATCH);
     
     return (
-      <div className="w-full max-w-3xl px-4">
+      <div className="w-full max-w-3xl px-4 flex flex-col items-center">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Select Your Term
@@ -50,8 +50,8 @@ export const ProfessorTermSelection = ({
           </p>
         </div>
 
-        <Tabs value={batch} onValueChange={onBatchChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+        <Tabs value={batch} onValueChange={onBatchChange} className="w-full max-w-md">
+          <TabsList className="grid w-full grid-cols-1 mb-6">
             {allBatches.map((batchId) => (
               <TabsTrigger key={batchId} value={batchId}>
                 {BATCH_NAMES[batchId]}
@@ -60,12 +60,12 @@ export const ProfessorTermSelection = ({
           </TabsList>
 
           {allBatches.map((batchId) => (
-            <TabsContent key={batchId} value={batchId}>
-              <div className="grid gap-4 md:grid-cols-2">
+            <TabsContent key={batchId} value={batchId} className="flex justify-center">
+              <div className="flex flex-wrap gap-4 justify-center">
                 {TERMS_BY_BATCH[batchId].map((term) => (
                   <Card
                     key={term.id}
-                    className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg"
+                    className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs"
                     onClick={() => onTermSelect(term.id)}
                   >
                     <CardHeader className="text-center pb-2">
