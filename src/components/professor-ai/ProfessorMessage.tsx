@@ -44,32 +44,22 @@ const preprocessContent = (content: string): string => {
   let processed = content;
   
   // Step 1: Fix separator row glued to first data row
-  // Pattern: |---|---|---| | Content | → split after separator
-  // Matches: closing pipe of separator, spaces, opening pipe of data row
+  // Pattern: ---|---|---| | Content → split after last separator pipe
+  // Key: match dash followed by pipe, space(s), then another pipe
   processed = processed.replace(
-    /(\|[-:\s]+\|)([ \t]+)(\|[^-])/g, 
+    /(-\|)([ \t]+)(\|)/g, 
     '$1\n$3'
   );
   
-  // Step 2: Fix data rows glued together
-  // Pattern: | Value1 | Value2 | | Next1 | Next2 |
-  // Key insight: A row ends with "content |" and new row starts with "| content"
-  // We need to find: | followed by space(s) followed by | followed by non-pipe content
-  // This detects: "| | Next" where the middle part is row boundary
+  // Step 2: Fix data rows glued together  
+  // Pattern: | Value | | Next Row | → split where row ends and new row begins
+  // Matches: any content char + closing pipe, space(s), opening pipe + content char
   processed = processed.replace(
-    /(\|)([ \t]{2,})(\|[ \t]*[^|\-\s])/g,
+    /([^|\-\n]\s*\|)([ \t]+)(\|[ \t]*[^|\-\s])/g,
     '$1\n$3'
   );
   
-  // Step 3: More aggressive fix for remaining glued rows
-  // Look for pattern: text | | text (row ending then row starting)
-  // The double-space after closing pipe indicates row break
-  processed = processed.replace(
-    /([^|\n]\s*\|)([ \t]+)(\|[^|\-\n])/g,
-    '$1\n$3'
-  );
-  
-  // Step 4: Ensure blank line before table starts (for GFM parsing)
+  // Step 3: Ensure blank line before table starts (for GFM parsing)
   processed = processed.replace(/([^\n])\n(\|[^\n]+\|)/g, '$1\n\n$2');
   processed = processed.replace(/(:)\n(\|)/g, '$1\n\n$2');
   
