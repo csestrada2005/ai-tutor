@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 interface ProfessorTermSelectionProps {
   batch: string;
   onTermSelect: (termId: string) => void;
@@ -11,26 +10,27 @@ interface ProfessorTermSelectionProps {
 }
 
 // Demo mode: Only Phase 1 of Cohort Alpha is available
-const TERMS_BY_BATCH: Record<string, { id: string; name: string; description: string }[]> = {
-  "2029": [
-    {
-      id: "term1",
-      name: "Phase 1",
-      description: "Foundational modules and core concepts",
-    },
-  ],
+const TERMS_BY_BATCH: Record<string, {
+  id: string;
+  name: string;
+  description: string;
+}[]> = {
+  "2029": [{
+    id: "term1",
+    name: "Phase 1",
+    description: "Foundational modules and core concepts"
+  }]
 };
 
 // Demo mode: Only Cohort Alpha is available
 const BATCH_NAMES: Record<string, string> = {
-  "2029": "Cohort Alpha",
+  "2029": "Cohort Alpha"
 };
-
-export const ProfessorTermSelection = ({ 
-  batch, 
-  onTermSelect, 
+export const ProfessorTermSelection = ({
+  batch,
+  onTermSelect,
   onBatchChange,
-  isDeveloper = false 
+  isDeveloper = false
 }: ProfessorTermSelectionProps) => {
   const terms = TERMS_BY_BATCH[batch] || [];
   const batchName = BATCH_NAMES[batch] || `${batch} Batch`;
@@ -38,36 +38,24 @@ export const ProfessorTermSelection = ({
   // For developers, show all batches with tabs
   if (isDeveloper && onBatchChange) {
     const allBatches = Object.keys(TERMS_BY_BATCH);
-    
-    return (
-      <div className="w-full max-w-3xl px-4 flex flex-col items-center">
+    return <div className="w-full max-w-3xl px-4 flex flex-col items-center">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Select Your Term
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Admin Access - All batches available
-          </p>
+          <p className="text-muted-foreground text-lg">Access to all the courses information with AI</p>
         </div>
 
         <Tabs value={batch} onValueChange={onBatchChange} className="w-full max-w-md">
           <TabsList className="grid w-full grid-cols-1 mb-6">
-            {allBatches.map((batchId) => (
-              <TabsTrigger key={batchId} value={batchId}>
+            {allBatches.map(batchId => <TabsTrigger key={batchId} value={batchId}>
                 {BATCH_NAMES[batchId]}
-              </TabsTrigger>
-            ))}
+              </TabsTrigger>)}
           </TabsList>
 
-          {allBatches.map((batchId) => (
-            <TabsContent key={batchId} value={batchId} className="flex justify-center">
+          {allBatches.map(batchId => <TabsContent key={batchId} value={batchId} className="flex justify-center">
               <div className="flex flex-wrap gap-4 justify-center">
-                {TERMS_BY_BATCH[batchId].map((term) => (
-                  <Card
-                    key={term.id}
-                    className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs"
-                    onClick={() => onTermSelect(term.id)}
-                  >
+                {TERMS_BY_BATCH[batchId].map(term => <Card key={term.id} className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs" onClick={() => onTermSelect(term.id)}>
                     <CardHeader className="text-center pb-2">
                       <div className="mx-auto mb-3 p-3 rounded-full bg-primary/10">
                         <BookOpen className="h-8 w-8 text-primary" />
@@ -82,19 +70,15 @@ export const ProfessorTermSelection = ({
                         Select {term.name}
                       </Button>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
-            </TabsContent>
-          ))}
+            </TabsContent>)}
         </Tabs>
-      </div>
-    );
+      </div>;
   }
 
   // Standard view for students - single batch only
-  return (
-    <div className="w-full max-w-2xl px-4 flex flex-col items-center">
+  return <div className="w-full max-w-2xl px-4 flex flex-col items-center">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">
           Select Your Term
@@ -105,12 +89,7 @@ export const ProfessorTermSelection = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 justify-items-center w-full">
-        {terms.map((term) => (
-          <Card
-            key={term.id}
-            className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs"
-            onClick={() => onTermSelect(term.id)}
-          >
+        {terms.map(term => <Card key={term.id} className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs" onClick={() => onTermSelect(term.id)}>
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-3 p-3 rounded-full bg-primary/10">
                 <BookOpen className="h-8 w-8 text-primary" />
@@ -125,9 +104,7 @@ export const ProfessorTermSelection = ({
                 Select {term.name}
               </Button>
             </CardContent>
-          </Card>
-        ))}
+          </Card>)}
       </div>
-    </div>
-  );
+    </div>;
 };
