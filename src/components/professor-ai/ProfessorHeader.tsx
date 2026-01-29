@@ -37,14 +37,10 @@ const modeOptions: {
   label: "Pre-Read"
 }];
 
+// Demo mode: Only Phase 1 of Cohort Alpha is available
 const TERM_OPTIONS_BY_BATCH: Record<string, { value: string; label: string }[]> = {
   "2029": [
-    { value: "term1", label: "Term 1" },
-    { value: "term2", label: "Term 2" },
-  ],
-  "2028": [
-    { value: "term3", label: "Term 3" },
-    { value: "term4", label: "Term 4" },
+    { value: "term1", label: "Phase 1" },
   ],
 };
 

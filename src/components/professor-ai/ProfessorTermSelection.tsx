@@ -10,6 +10,7 @@ interface ProfessorTermSelectionProps {
   isDeveloper?: boolean;
 }
 
+// Demo mode: Only Phase 1 of Cohort Alpha is available
 const TERMS_BY_BATCH: Record<string, { id: string; name: string; description: string }[]> = {
   "2029": [
     {
@@ -17,29 +18,12 @@ const TERMS_BY_BATCH: Record<string, { id: string; name: string; description: st
       name: "Phase 1",
       description: "Foundational modules and core concepts",
     },
-    {
-      id: "term2",
-      name: "Phase 2",
-      description: "Advanced modules and specializations",
-    },
-  ],
-  "2028": [
-    {
-      id: "term3",
-      name: "Phase 3",
-      description: "Innovation and strategy immersion",
-    },
-    {
-      id: "term4",
-      name: "Phase 4",
-      description: "Leadership and capstone projects",
-    },
   ],
 };
 
+// Demo mode: Only Cohort Alpha is available
 const BATCH_NAMES: Record<string, string> = {
   "2029": "Cohort Alpha",
-  "2028": "Cohort Beta",
 };
 
 export const ProfessorTermSelection = ({ 
