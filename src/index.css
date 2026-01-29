@@ -8,9 +8,9 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Base Backgrounds - Clean White & Slate */
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    /* Base Backgrounds - Soft Blue & Deep Navy */
+    --background: 217 91% 97%;    /* Soft Blue-50 for reduced eye strain */
+    --foreground: 222 47% 11%;    /* Deep Navy for clear legibility */
 
     /* Cards & Surfaces */
     --card: 0 0% 100%;
