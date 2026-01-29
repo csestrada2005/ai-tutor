@@ -1,20 +1,14 @@
 import { Button } from "@/components/ui/button";
 import FeatureCard from "@/components/FeatureCard";
-import StepCard from "@/components/StepCard";
-import VisitorCounter from "@/components/VisitorCounter";
-import CountdownTimer from "@/components/CountdownTimer";
 import { 
-  Download, 
   Sparkles, 
   MessageCircle, 
-  Users, 
   Database,
   ArrowRight,
-  GraduationCap,
-  Zap
+  GraduationCap
 } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
@@ -69,8 +63,6 @@ const Index = () => {
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   <span>Free to Start</span>
                 </div>
-                <VisitorCounter />
-                <CountdownTimer />
               </div>
             </div>
             
