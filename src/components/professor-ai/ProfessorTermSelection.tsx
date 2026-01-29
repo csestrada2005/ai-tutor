@@ -86,7 +86,7 @@ export const ProfessorTermSelection = ({
                   >
                     <CardHeader className="text-center pb-2">
                       <div className="mx-auto mb-3 p-3 rounded-full bg-primary/10">
-                        <MapPin className="h-8 w-8 text-primary" />
+                        <BookOpen className="h-8 w-8 text-primary" />
                       </div>
                       <CardTitle className="text-xl text-foreground">{term.name}</CardTitle>
                       <CardDescription className="text-muted-foreground">
@@ -129,7 +129,7 @@ export const ProfessorTermSelection = ({
           >
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-3 p-3 rounded-full bg-primary/10">
-                <MapPin className="h-8 w-8 text-primary" />
+                <BookOpen className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="text-xl text-foreground">{term.name}</CardTitle>
               <CardDescription className="text-muted-foreground">
