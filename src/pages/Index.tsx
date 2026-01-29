@@ -31,15 +31,15 @@ const Index = () => {
             <div className="space-y-6 sm:space-y-8 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30 animate-pulse">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-                <span className="text-xs sm:text-sm font-semibold text-primary">Only for TETR Students</span>
+                <span className="text-xs sm:text-sm font-semibold text-primary">AI-Powered Learning</span>
               </div>
               
               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-foreground leading-tight">
-                Ask TETR: A TETR Way to Study
+                ProfessorAI: A Smarter Way to Study
               </h1>
               
               <p className="text-base sm:text-lg text-muted-foreground">
-                By: Juan Pablo Rocha, Alan Ayala and Samuel Estrada
+                Your intelligent AI tutor for university courses
               </p>
               
               <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl">
@@ -92,7 +92,7 @@ const Index = () => {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 sm:mb-16">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-4 sm:mb-6">
-              <span className="text-xs sm:text-sm font-semibold text-primary">Built for TETR Students</span>
+              <span className="text-xs sm:text-sm font-semibold text-primary">Built for University Students</span>
             </div>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
               Study Smarter, Not Harder
@@ -171,7 +171,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
             <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30 mb-2 sm:mb-4">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs sm:text-sm font-semibold text-primary">Only for TETR Students</span>
+              <span className="text-xs sm:text-sm font-semibold text-primary">For University Students</span>
             </div>
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-bold text-foreground px-2">
               Start Learning Smarter Today
@@ -199,7 +199,7 @@ const Index = () => {
             </div>
             
             <p className="text-xs sm:text-sm text-muted-foreground pt-2 sm:pt-4">
-              ✓ Free to start  •  ✓ All TETR courses available  •  ✓ Instant access
+              ✓ Free to start  •  ✓ All courses available  •  ✓ Instant access
             </p>
           </div>
         </div>
@@ -209,16 +209,13 @@ const Index = () => {
       <footer className="py-8 sm:py-12 border-t border-border bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
-            <div className="flex items-center justify-center">
-              <img 
-                src="/asktetr-logo.png" 
-                alt="Ask TETR - A TETR Way to Study" 
-                className="h-16 sm:h-24 w-auto"
-              />
+            <div className="flex items-center justify-center gap-2">
+              <GraduationCap className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+              <span className="text-xl sm:text-2xl font-bold text-primary">ProfessorAI</span>
             </div>
             
             <p className="text-muted-foreground text-center text-xs sm:text-base">
-              © 2025 Ask TETR: A TETR Way to Study. Built for TETR College of Business students.
+              © 2025 ProfessorAI. Intelligent tutoring for university students.
             </p>
           </div>
         </div>

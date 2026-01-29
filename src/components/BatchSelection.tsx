@@ -26,14 +26,10 @@ export const BatchSelection = ({ onBatchSelect }: BatchSelectionProps) => {
     <div className="w-full max-w-2xl">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <img
-            src="/asktetr-logo.png"
-            alt="Ask TETR"
-            className="h-16 w-auto"
-          />
+          <GraduationCap className="h-16 w-16 text-primary" />
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Welcome to Ask TETR
+          Welcome to ProfessorAI
         </h1>
         <p className="text-muted-foreground text-lg">
           Select your batch to access your courses

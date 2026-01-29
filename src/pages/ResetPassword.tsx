@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { GraduationCap } from "lucide-react";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -107,11 +108,7 @@ const ResetPassword = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-4">
-              <img
-                src="/asktetr-logo.png"
-                alt="Ask TETR Logo"
-                className="h-16 w-auto"
-              />
+              <GraduationCap className="h-16 w-16 text-primary" />
             </div>
             <CardTitle className="text-2xl font-bold">Invalid or Expired Link</CardTitle>
             <CardDescription>
@@ -136,11 +133,7 @@ const ResetPassword = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <img
-              src="/asktetr-logo.png"
-              alt="Ask TETR Logo"
-              className="h-16 w-auto"
-            />
+            <GraduationCap className="h-16 w-16 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold">Create a New Password</CardTitle>
           <CardDescription>
