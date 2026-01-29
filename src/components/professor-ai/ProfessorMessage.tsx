@@ -43,19 +43,34 @@ const isTable = (text: string): boolean => {
 const preprocessContent = (content: string): string => {
   let processed = content;
   
-  // Fix "glued" table rows where multi-column separator runs into content: |---|---|---| | Content |
-  // Handle any number of separator columns before the glued row
-  processed = processed.replace(/((?:\|[\s\-:]+)+\|)[ \t]+(\|)/g, '$1\n$2');
+  // Step 1: Fix separator row glued to first data row
+  // Pattern: |---|---|---| | Content | → split after separator
+  // Matches: closing pipe of separator, spaces, opening pipe of data row
+  processed = processed.replace(
+    /(\|[-:\s]+\|)([ \t]+)(\|[^-])/g, 
+    '$1\n$3'
+  );
   
-  // Fix generic glued data rows: | Value | | Next Row |
-  processed = processed.replace(/(\|)[ \t]+(\|)/g, '$1\n$2');
+  // Step 2: Fix data rows glued together
+  // Pattern: | Value1 | Value2 | | Next1 | Next2 |
+  // Key insight: A row ends with "content |" and new row starts with "| content"
+  // We need to find: | followed by space(s) followed by | followed by non-pipe content
+  // This detects: "| | Next" where the middle part is row boundary
+  processed = processed.replace(
+    /(\|)([ \t]{2,})(\|[ \t]*[^|\-\s])/g,
+    '$1\n$3'
+  );
   
-  // Ensure blank line before table rows (lines starting with |)
-  // Match: non-empty line followed by single newline, then a line starting with |
+  // Step 3: More aggressive fix for remaining glued rows
+  // Look for pattern: text | | text (row ending then row starting)
+  // The double-space after closing pipe indicates row break
+  processed = processed.replace(
+    /([^|\n]\s*\|)([ \t]+)(\|[^|\-\n])/g,
+    '$1\n$3'
+  );
+  
+  // Step 4: Ensure blank line before table starts (for GFM parsing)
   processed = processed.replace(/([^\n])\n(\|[^\n]+\|)/g, '$1\n\n$2');
-  
-  // Also handle case where content starts with a table immediately after text on previous line
-  // This handles edge cases like "Some text:\n| Header |"
   processed = processed.replace(/(:)\n(\|)/g, '$1\n\n$2');
   
   return processed;
