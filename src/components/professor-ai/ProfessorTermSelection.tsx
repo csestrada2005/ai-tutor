@@ -94,7 +94,7 @@ export const ProfessorTermSelection = ({
 
   // Standard view for students - single batch only
   return (
-    <div className="w-full max-w-2xl px-4">
+    <div className="w-full max-w-2xl px-4 flex flex-col items-center">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">
           Select Your Term
@@ -104,11 +104,11 @@ export const ProfessorTermSelection = ({
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 justify-items-center w-full">
         {terms.map((term) => (
           <Card
             key={term.id}
-            className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg"
+            className="cursor-pointer transition-all bg-card border-border hover:border-primary hover:shadow-lg w-full max-w-xs"
             onClick={() => onTermSelect(term.id)}
           >
             <CardHeader className="text-center pb-2">
