@@ -6,18 +6,13 @@ interface BatchSelectionProps {
   onBatchSelect: (batchId: string) => void;
 }
 
+// Demo mode: Only Cohort Alpha is available
 const BATCHES = [
   {
     id: "2029",
     name: "Cohort Alpha",
     description: "Foundational Track",
     icon: GraduationCap,
-  },
-  {
-    id: "2028",
-    name: "Cohort Beta",
-    description: "Advanced Track",
-    icon: Users,
   },
 ];
 
