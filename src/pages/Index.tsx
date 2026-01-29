@@ -1,21 +1,12 @@
 import { Button } from "@/components/ui/button";
 import FeatureCard from "@/components/FeatureCard";
-import { 
-  Sparkles, 
-  MessageCircle, 
-  Database,
-  ArrowRight,
-  GraduationCap
-} from "lucide-react";
+import { Sparkles, MessageCircle, Database, ArrowRight, GraduationCap } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
 const Index = () => {
   const navigate = useNavigate();
-  
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[var(--gradient-subtle)]" />
@@ -41,18 +32,18 @@ const Index = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button 
-                  size="lg" 
-                  className="text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-7 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-semibold"
-                  onClick={async () => {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                      navigate('/professor');
-                    } else {
-                      navigate('/auth');
-                    }
-                  }}
-                >
+                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-7 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-semibold" onClick={async () => {
+                const {
+                  data: {
+                    session
+                  }
+                } = await supabase.auth.getSession();
+                if (session) {
+                  navigate('/professor');
+                } else {
+                  navigate('/auth');
+                }
+              }}>
                   Start Learning Now
                   <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
@@ -60,8 +51,8 @@ const Index = () => {
               
               <div className="flex flex-col gap-3 sm:gap-4 pt-2 sm:pt-4">
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span>Free to Start</span>
+                  
+                  
                 </div>
               </div>
             </div>
@@ -69,11 +60,7 @@ const Index = () => {
             <div className="relative animate-fade-in-delay group order-first lg:order-last">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-primary/10 rounded-3xl blur-3xl group-hover:blur-2xl transition-all" />
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent rounded-2xl" />
-              <img 
-                src={heroBanner} 
-                alt="AI Tutor Interface" 
-                className="relative rounded-2xl shadow-2xl w-full border border-primary/20 transition-transform group-hover:scale-[1.02]"
-              />
+              <img src={heroBanner} alt="AI Tutor Interface" className="relative rounded-2xl shadow-2xl w-full border border-primary/20 transition-transform group-hover:scale-[1.02]" />
             </div>
           </div>
         </div>
@@ -95,20 +82,25 @@ const Index = () => {
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
-            {[
-              { pain: "Hours wasted scrubbing through recordings", solved: "Instant answers from your AI tutor" },
-              { pain: "Messy transcripts impossible to study from", solved: "Clean, organized course materials" },
-              { pain: "Can't remember everything from lectures", solved: "Your entire semester in one chatbot" },
-              { pain: "Studying alone with no help", solved: "24/7 AI teaching assistant" }
-            ].map((item, index) => (
-              <div key={index} className="bg-card rounded-xl p-4 sm:p-6 border border-primary/10 shadow-sm hover:shadow-[var(--shadow-soft)] hover:border-primary/30 transition-all group">
+            {[{
+            pain: "Hours wasted scrubbing through recordings",
+            solved: "Instant answers from your AI tutor"
+          }, {
+            pain: "Messy transcripts impossible to study from",
+            solved: "Clean, organized course materials"
+          }, {
+            pain: "Can't remember everything from lectures",
+            solved: "Your entire semester in one chatbot"
+          }, {
+            pain: "Studying alone with no help",
+            solved: "24/7 AI teaching assistant"
+          }].map((item, index) => <div key={index} className="bg-card rounded-xl p-4 sm:p-6 border border-primary/10 shadow-sm hover:shadow-[var(--shadow-soft)] hover:border-primary/30 transition-all group">
                 <p className="text-muted-foreground leading-relaxed mb-2 sm:mb-3 line-through text-xs sm:text-sm">"{item.pain}"</p>
                 <p className="text-primary font-semibold flex items-center gap-2 text-sm sm:text-base group-hover:translate-x-1 transition-transform">
                   <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
                   {item.solved}
                 </p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -130,26 +122,11 @@ const Index = () => {
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-            <FeatureCard
-              icon={MessageCircle}
-              title="Intelligent Q&A Chatbot"
-              description="Ask anything about your lectures. The AI has processed all content and gives instant, accurate answers with sources."
-              benefit="Stop scrubbing through videos—get answers instantly"
-            />
+            <FeatureCard icon={MessageCircle} title="Intelligent Q&A Chatbot" description="Ask anything about your lectures. The AI has processed all content and gives instant, accurate answers with sources." benefit="Stop scrubbing through videos—get answers instantly" />
             
-            <FeatureCard
-              icon={Database}
-              title="Centralized Knowledge Hub"
-              description="All course materials are processed and stored in a searchable knowledge base from your actual lectures."
-              benefit="Your ultimate study partner for the entire semester"
-            />
+            <FeatureCard icon={Database} title="Centralized Knowledge Hub" description="All course materials are processed and stored in a searchable knowledge base from your actual lectures." benefit="Your ultimate study partner for the entire semester" />
             
-            <FeatureCard
-              icon={GraduationCap}
-              title="Exam Preparation Assistant"
-              description="Generate summaries, practice questions, and topic reviews from your lectures to ace your exams."
-              benefit="Prepare effectively with AI-generated study materials"
-            />
+            <FeatureCard icon={GraduationCap} title="Exam Preparation Assistant" description="Generate summaries, practice questions, and topic reviews from your lectures to ace your exams." benefit="Prepare effectively with AI-generated study materials" />
           </div>
         </div>
       </section>
@@ -173,26 +150,24 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 sm:pt-6">
-              <Button 
-                size="lg" 
-                className="text-base sm:text-lg px-8 sm:px-12 py-6 sm:py-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-bold sm:text-xl"
-                onClick={async () => {
-                  const { data: { session } } = await supabase.auth.getSession();
-                  if (session) {
-                    navigate('/professor');
-                  } else {
-                    navigate('/auth');
-                  }
-                }}
-              >
+              <Button size="lg" className="text-base sm:text-lg px-8 sm:px-12 py-6 sm:py-8 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105 hover:shadow-[var(--shadow-hover)] font-bold sm:text-xl" onClick={async () => {
+              const {
+                data: {
+                  session
+                }
+              } = await supabase.auth.getSession();
+              if (session) {
+                navigate('/professor');
+              } else {
+                navigate('/auth');
+              }
+            }}>
                 Launch AI Tutor
                 <ArrowRight className="ml-2 sm:ml-3 w-5 h-5 sm:w-6 sm:h-6" />
               </Button>
             </div>
             
-            <p className="text-xs sm:text-sm text-muted-foreground pt-2 sm:pt-4">
-              ✓ Free to start  •  ✓ All courses available  •  ✓ Instant access
-            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground pt-2 sm:pt-4"> ✓ All courses available • ✓ Instant access</p>
           </div>
         </div>
       </section>
@@ -212,8 +187,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
