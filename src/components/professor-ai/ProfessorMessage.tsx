@@ -43,9 +43,12 @@ const isTable = (text: string): boolean => {
 const preprocessContent = (content: string): string => {
   let processed = content;
   
-  // Fix "glued" table rows where separator runs into content: |---|---| | Content |
-  // Replace spaces between closing pipe of separator and opening pipe of next row with newline
-  processed = processed.replace(/(\|[\s\-:]+\|)[ \t]+(\|)/g, '$1\n$2');
+  // Fix "glued" table rows where multi-column separator runs into content: |---|---|---| | Content |
+  // Handle any number of separator columns before the glued row
+  processed = processed.replace(/((?:\|[\s\-:]+)+\|)[ \t]+(\|)/g, '$1\n$2');
+  
+  // Fix generic glued data rows: | Value | | Next Row |
+  processed = processed.replace(/(\|)[ \t]+(\|)/g, '$1\n$2');
   
   // Ensure blank line before table rows (lines starting with |)
   // Match: non-empty line followed by single newline, then a line starting with |
