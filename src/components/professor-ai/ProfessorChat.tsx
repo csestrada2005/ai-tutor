@@ -76,8 +76,15 @@ export const ProfessorChat = ({
 
   // Handle calibration level selection
   const handleCalibrationSelect = (level: KnowledgeLevel) => {
-    // Send the level as a user message
-    onSendMessage(`I am a ${level}`);
+    // Map level to natural chat messages for a better user experience
+    const levelMessages: Record<KnowledgeLevel, string> = {
+      Novice: "I don't know anything about this topic.",
+      Intermediate: "I have some knowledge about this.",
+      Expert: "I'm an expert on the topic.",
+    };
+    
+    // Send the friendly message that the backend can detect
+    onSendMessage(levelMessages[level]);
     // Notify parent to hide selector
     onCalibrationSelect?.(level);
   };
