@@ -8,153 +8,146 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 120 10% 8%;
-    --foreground: 0 0% 98%;
+    /* Base Backgrounds - Clean White & Slate */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 120 15% 12%;
-    --card-foreground: 0 0% 98%;
+    /* Cards & Surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --popover: 120 15% 10%;
-    --popover-foreground: 0 0% 98%;
+    /* PRIMARY BRAND - Deep Indigo/Navy */
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
 
-    --primary: 73 100% 52%;
-    --primary-foreground: 120 10% 8%;
+    /* SECONDARY - Soft Slate */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
 
-    --secondary: 120 15% 20%;
-    --secondary-foreground: 0 0% 98%;
+    /* MUTED */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --muted: 120 10% 20%;
-    --muted-foreground: 0 0% 65%;
+    /* ACCENT */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
 
-    --accent: 73 100% 52%;
-    --accent-foreground: 120 10% 8%;
-
+    /* DESTRUCTIVE */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 120 15% 20%;
-    --input: 120 15% 20%;
-    --ring: 73 100% 52%;
+    /* BORDERS */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222 47% 11%;
 
-    --radius: 0.75rem;
-    
+    --radius: 0.5rem;
+
     /* Custom design tokens */
-    --gradient-hero: linear-gradient(135deg, hsl(73 100% 52%), hsl(90 100% 45%), hsl(73 100% 52%));
-    --gradient-subtle: linear-gradient(180deg, hsl(120 10% 10%), hsl(120 10% 8%));
-    --gradient-card: linear-gradient(135deg, hsl(120 15% 12%), hsl(120 15% 14%));
-    --gradient-input: linear-gradient(135deg, hsl(120 15% 14%), hsl(120 15% 16%));
-    --shadow-soft: 0 4px 20px -4px hsl(73 100% 52% / 0.2);
-    --shadow-hover: 0 8px 30px -4px hsl(73 100% 52% / 0.35);
-    --shadow-input: 0 2px 20px -2px hsl(0 0% 0% / 0.3);
-    --shadow-glow: 0 0 40px -10px hsl(73 100% 52% / 0.4);
+    --gradient-hero: linear-gradient(135deg, hsl(222 47% 11%), hsl(215 25% 27%), hsl(222 47% 11%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 40% 96%), hsl(210 40% 98%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --gradient-input: linear-gradient(135deg, hsl(210 40% 98%), hsl(210 40% 96%));
+    --shadow-soft: 0 4px 20px -4px hsl(222 47% 11% / 0.1);
+    --shadow-hover: 0 8px 30px -4px hsl(222 47% 11% / 0.15);
+    --shadow-input: 0 2px 20px -2px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 40px -10px hsl(222 47% 11% / 0.2);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     /* Chat-specific tokens */
-    --chat-user-bg: 73 80% 45%;
-    --chat-user-fg: 0 0% 100%;
-    --chat-ai-bg: 120 15% 15%;
-    --chat-ai-fg: 0 0% 95%;
-    
-    /* Modern chat text colors - off-white for reduced eye strain */
-    --chat-text: 220 10% 96%;
-    --chat-text-secondary: 220 10% 70%;
+    --chat-user-bg: 222 47% 11%;
+    --chat-user-fg: 210 40% 98%;
+    --chat-ai-bg: 210 40% 96%;
+    --chat-ai-fg: 222 47% 11%;
 
-    /* Professor AI Design Tokens - Academic Dark Theme */
-    --professor-bg: 220 20% 10%;
-    --professor-fg: 220 15% 95%;
-    --professor-sidebar: 220 25% 12%;
-    --professor-border: 220 20% 18%;
-    --professor-input: 220 25% 15%;
-    --professor-accent: 210 100% 60%;
-    --professor-muted: 220 15% 55%;
-    --professor-user-bg: 0 0% 100%;
-    --professor-user-fg: 220 20% 10%;
-    --professor-assistant-bg: 220 25% 16%;
+    /* Modern chat text colors */
+    --chat-text: 222 47% 11%;
+    --chat-text-secondary: 215.4 16.3% 46.9%;
 
-    --sidebar-background: 0 0% 98%;
+    /* Professor AI Design Tokens - Light Theme */
+    --professor-bg: 210 40% 98%;
+    --professor-fg: 222 47% 11%;
+    --professor-sidebar: 210 40% 96%;
+    --professor-border: 214.3 31.8% 91.4%;
+    --professor-input: 210 40% 96%;
+    --professor-accent: 222 47% 11%;
+    --professor-muted: 215.4 16.3% 46.9%;
+    --professor-user-bg: 222 47% 11%;
+    --professor-user-fg: 210 40% 98%;
+    --professor-assistant-bg: 210 40% 96%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 222 47% 11%;
   }
 
   .dark {
-    --background: 120 10% 5%;
-    --foreground: 0 0% 98%;
-
-    --card: 120 15% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 120 15% 8%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 73 100% 52%;
-    --primary-foreground: 120 10% 5%;
-
-    --secondary: 120 15% 18%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 120 10% 18%;
-    --muted-foreground: 0 0% 65%;
-
-    --accent: 73 100% 52%;
-    --accent-foreground: 120 10% 5%;
-
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
 
-    --border: 120 15% 18%;
-    --input: 120 15% 18%;
-    --ring: 73 100% 52%;
-    
-    --gradient-hero: linear-gradient(135deg, hsl(73 100% 52%), hsl(90 100% 45%), hsl(73 100% 52%));
-    --gradient-subtle: linear-gradient(180deg, hsl(120 10% 8%), hsl(120 10% 5%));
-    --gradient-card: linear-gradient(135deg, hsl(120 15% 10%), hsl(120 15% 12%));
-    --gradient-input: linear-gradient(135deg, hsl(120 15% 12%), hsl(120 15% 14%));
-    --shadow-soft: 0 4px 20px -4px hsl(73 100% 52% / 0.25);
-    --shadow-hover: 0 8px 30px -4px hsl(73 100% 52% / 0.4);
+    --gradient-hero: linear-gradient(135deg, hsl(210 40% 98%), hsl(215 25% 80%), hsl(210 40% 98%));
+    --gradient-subtle: linear-gradient(180deg, hsl(222 47% 13%), hsl(222 47% 11%));
+    --gradient-card: linear-gradient(135deg, hsl(222 47% 13%), hsl(222 47% 15%));
+    --gradient-input: linear-gradient(135deg, hsl(217.2 32.6% 17.5%), hsl(217.2 32.6% 20%));
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
+    --shadow-hover: 0 8px 30px -4px hsl(0 0% 0% / 0.4);
     --shadow-input: 0 2px 20px -2px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 40px -10px hsl(73 100% 52% / 0.5);
-    
+    --shadow-glow: 0 0 40px -10px hsl(210 40% 98% / 0.2);
+
     /* Chat-specific tokens */
-    --chat-user-bg: 73 80% 45%;
-    --chat-user-fg: 0 0% 100%;
-    --chat-ai-bg: 120 15% 12%;
-    --chat-ai-fg: 0 0% 95%;
-    
-    /* Modern chat text colors - off-white for reduced eye strain */
-    --chat-text: 220 10% 96%;
-    --chat-text-secondary: 220 10% 65%;
+    --chat-user-bg: 210 40% 98%;
+    --chat-user-fg: 222 47% 11%;
+    --chat-ai-bg: 217.2 32.6% 17.5%;
+    --chat-ai-fg: 210 40% 98%;
 
-    /* Professor AI Design Tokens - Academic Dark Theme */
-    --professor-bg: 220 20% 8%;
-    --professor-fg: 220 15% 95%;
-    --professor-sidebar: 220 25% 10%;
-    --professor-border: 220 20% 16%;
-    --professor-input: 220 25% 13%;
-    --professor-accent: 210 100% 60%;
-    --professor-muted: 220 15% 50%;
-    --professor-user-bg: 0 0% 100%;
-    --professor-user-fg: 220 20% 10%;
-    --professor-assistant-bg: 220 25% 14%;
+    /* Modern chat text colors */
+    --chat-text: 210 40% 98%;
+    --chat-text-secondary: 215 20.2% 65.1%;
 
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Professor AI Design Tokens - Dark Theme */
+    --professor-bg: 222 47% 11%;
+    --professor-fg: 210 40% 98%;
+    --professor-sidebar: 217.2 32.6% 17.5%;
+    --professor-border: 217.2 32.6% 17.5%;
+    --professor-input: 217.2 32.6% 17.5%;
+    --professor-accent: 210 40% 98%;
+    --professor-muted: 215 20.2% 65.1%;
+    --professor-user-bg: 210 40% 98%;
+    --professor-user-fg: 222 47% 11%;
+    --professor-assistant-bg: 217.2 32.6% 17.5%;
+
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 212.7 26.8% 83.9%;
   }
 }
 

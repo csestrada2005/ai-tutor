@@ -9,14 +9,14 @@ interface BatchSelectionProps {
 const BATCHES = [
   {
     id: "2029",
-    name: "2029 Batch",
-    description: "Current cohort with foundational courses",
+    name: "Cohort Alpha",
+    description: "Foundational Track",
     icon: GraduationCap,
   },
   {
     id: "2028",
-    name: "2028 Batch",
-    description: "Advanced cohort with specialized courses",
+    name: "Cohort Beta",
+    description: "Advanced Track",
     icon: Users,
   },
 ];

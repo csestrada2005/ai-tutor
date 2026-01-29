@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ProfessorTermSelectionProps {
@@ -10,40 +10,36 @@ interface ProfessorTermSelectionProps {
   isDeveloper?: boolean;
 }
 
-const TERMS_BY_BATCH: Record<string, { id: string; name: string; description: string; location: string }[]> = {
+const TERMS_BY_BATCH: Record<string, { id: string; name: string; description: string }[]> = {
   "2029": [
     {
       id: "term1",
-      name: "Term 1",
-      description: "Foundational courses for new cohort",
-      location: "Dubai",
+      name: "Phase 1",
+      description: "Foundational modules and core concepts",
     },
     {
       id: "term2",
-      name: "Term 2",
-      description: "Advanced courses and specializations",
-      location: "India",
+      name: "Phase 2",
+      description: "Advanced modules and specializations",
     },
   ],
   "2028": [
     {
       id: "term3",
-      name: "Term 3",
+      name: "Phase 3",
       description: "Innovation and strategy immersion",
-      location: "Singapore/Malaysia",
     },
     {
       id: "term4",
-      name: "Term 4",
-      description: "Social impact and leadership",
-      location: "Ghana",
+      name: "Phase 4",
+      description: "Leadership and capstone projects",
     },
   ],
 };
 
 const BATCH_NAMES: Record<string, string> = {
-  "2029": "2029 Batch",
-  "2028": "2028 Batch",
+  "2029": "Cohort Alpha",
+  "2028": "Cohort Beta",
 };
 
 export const ProfessorTermSelection = ({ 
@@ -96,10 +92,6 @@ export const ProfessorTermSelection = ({
                       <CardDescription className="text-muted-foreground">
                         {term.description}
                       </CardDescription>
-                      <div className="flex items-center justify-center gap-1.5 mt-2 text-sm text-primary font-medium">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {term.location}
-                      </div>
                     </CardHeader>
                     <CardContent className="pt-0">
                       <Button className="w-full" variant="outline">
@@ -143,10 +135,6 @@ export const ProfessorTermSelection = ({
               <CardDescription className="text-muted-foreground">
                 {term.description}
               </CardDescription>
-              <div className="flex items-center justify-center gap-1.5 mt-2 text-sm text-primary font-medium">
-                <MapPin className="h-3.5 w-3.5" />
-                {term.location}
-              </div>
             </CardHeader>
             <CardContent className="pt-0">
               <Button className="w-full" variant="outline">
