@@ -377,6 +377,7 @@ export const useProfessorChat = ({
     sessionId: sessionIdRef.current,
     activeConversationId,
     calibrationRequest,
+    clearCalibrationRequest: () => setCalibrationRequest(null),
     sendMessage,
     loadConversation,
     resetChat,

@@ -385,6 +385,11 @@ const ProfessorAI = () => {
             uploadedFile={chat.uploadedFile}
             onFileUpload={chat.handleFileUpload}
             sessionId={chat.sessionId}
+            calibrationRequest={chat.calibrationRequest}
+            onCalibrationSelect={() => {
+              // Clear calibration request after user selects a level
+              chat.clearCalibrationRequest();
+            }}
           />
         )}
 
