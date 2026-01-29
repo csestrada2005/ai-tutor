@@ -39,12 +39,13 @@ const isTable = (text: string): boolean => {
   return hasTableStructure && hasSeparatorRow;
 };
 
-// Preprocess content to ensure tables have proper blank lines before them for GFM parsing
+// Preprocess content to ensure tables have proper blank lines and fix glued rows
 const preprocessContent = (content: string): string => {
-  // Pattern: Find lines starting with | that are preceded by a non-empty line with only a single newline
-  // This regex matches: (non-newline char)(single newline)(line starting with |)
-  // and replaces with double newline to create proper paragraph break
   let processed = content;
+  
+  // Fix "glued" table rows where separator runs into content: |---|---| | Content |
+  // Replace spaces between closing pipe of separator and opening pipe of next row with newline
+  processed = processed.replace(/(\|[\s\-:]+\|)[ \t]+(\|)/g, '$1\n$2');
   
   // Ensure blank line before table rows (lines starting with |)
   // Match: non-empty line followed by single newline, then a line starting with |
