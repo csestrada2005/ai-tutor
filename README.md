@@ -1,73 +1,69 @@
-# Welcome to your Lovable project
+# ProfessorAI - Intelligent Tutor Platform
 
-## Project info
+![Status](https://img.shields.io/badge/Status-Investor_Demo-blue) ![Version](https://img.shields.io/badge/Version-2.0_WhiteLabel-1E293B)
 
-**URL**: https://lovable.dev/projects/93a4e185-b263-4e0d-83e0-9cf4863ef461
+**ProfessorAI** is an enterprise-grade adaptive learning platform that leverages RAG (Retrieval-Augmented Generation) to deliver personalized academic tutoring. This white-label version is designed for scalability, allowing institutions to deploy their own "AI Professor" on top of existing curriculum databases.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Key Features
 
-**Use Lovable**
+* **Adaptive Intelligence:** The AI adjusts its teaching style based on the student's expertise level (Novice to Expert).
+* **Context-Aware RAG:** Retrieval engine pulls from verified course materials (PDFs, Transcripts, Lectures) to ensure hallucination-free answers.
+* **Multi-Modal Learning:**
+    * **Study Mode:** Deep-dive conversations with citations.
+    * **Quiz Mode:** Auto-generated assessments to test knowledge retention.
+    * **Notes Creator:** Instant summarization and study guide generation.
+* **Cohort Isolation:** Secure data separation between different student batches.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/93a4e185-b263-4e0d-83e0-9cf4863ef461) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠 Tech Stack
 
-**Use your preferred IDE**
+* **Frontend:** React (Vite), TypeScript
+* **Styling:** Tailwind CSS, shadcn/ui, Lucide React
+* **State Management:** TanStack Query
+* **Backend / Database:** Supabase (Auth, Vector Store), Render (Python API)
+* **AI Engine:** Google Gemini (Embeddings & Inference) via LangChain
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🎨 Theme & Branding (White-Label)
 
-Follow these steps:
+This repository implements the **"Ivy League SaaS"** design system:
+* **Primary Color:** Deep Indigo (`#1E293B`)
+* **Background:** Soft Sky (`#eff6ff`)
+* **Accent:** Electric Blue (`#3B82F6`)
+* **Typography:** Inter / Sans-serif (Clean, Modern)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+All specific institutional branding ("Tetr", "AskTETR") has been stripped via the **UI Masking Layer** (see below).
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## ⚙️ Configuration & UI Masking
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+To maintain backend compatibility while presenting a generic interface, this frontend uses a **Mapping Layer**. The UI displays generic names, but the API sends specific IDs.
 
-**Edit a file directly in GitHub**
+| UI Display Name | Backend ID (Immutable) | Description |
+| :--- | :--- | :--- |
+| **Cohort Alpha** | `2029` | Foundational / First-year track |
+| **Cohort Beta** | `2028` | Advanced / Second-year track |
+| **Phase 1** | `term1` | Core Concepts |
+| **Phase 2** | `term2` | Applied Skills |
+| **Global Hub** | *(Various)* | Locations like "India" or "Dubai" are generalized |
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+> **Note to Developers:** When editing `src/data/courses.ts` or `BatchSelection.tsx`, strictly change only the `name` (display) fields. **DO NOT** change `id` fields, or the connection to the Supabase Vector Store will break.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🚀 Getting Started
 
-## What technologies are used for this project?
+### 1. Prerequisites
+* Node.js (v18+)
+* npm or bun
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/93a4e185-b263-4e0d-83e0-9cf4863ef461) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### 2. Installation
+```bash
+git clone [https://github.com/your-username/professor-ai-frontend.git](https://github.com/your-username/professor-ai-frontend.git)
+cd professor-ai-frontend
+npm install
