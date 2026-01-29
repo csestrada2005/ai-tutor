@@ -32,7 +32,29 @@ const isConceptDefinition = (text: string): { term: string; description: string 
 
 // Check if text is a Markdown table (contains pipes and separator row pattern)
 const isTable = (text: string): boolean => {
-  return text.includes('|') && /\|[\s-:|]*\|/.test(text) && text.includes('\n');
+  // More robust detection: check for pipe at start of line and separator row with various spacing
+  const hasTableStructure = text.includes('|') && text.includes('\n');
+  // Match separator rows like |---|---|, | --- | --- |, |:---:|:---:|, etc.
+  const hasSeparatorRow = /\|[\s:]*-{2,}[\s:]*\|/.test(text) || /\|\s*-+\s*\|/.test(text);
+  return hasTableStructure && hasSeparatorRow;
+};
+
+// Preprocess content to ensure tables have proper blank lines before them for GFM parsing
+const preprocessContent = (content: string): string => {
+  // Pattern: Find lines starting with | that are preceded by a non-empty line with only a single newline
+  // This regex matches: (non-newline char)(single newline)(line starting with |)
+  // and replaces with double newline to create proper paragraph break
+  let processed = content;
+  
+  // Ensure blank line before table rows (lines starting with |)
+  // Match: non-empty line followed by single newline, then a line starting with |
+  processed = processed.replace(/([^\n])\n(\|[^\n]+\|)/g, '$1\n\n$2');
+  
+  // Also handle case where content starts with a table immediately after text on previous line
+  // This handles edge cases like "Some text:\n| Header |"
+  processed = processed.replace(/(:)\n(\|)/g, '$1\n\n$2');
+  
+  return processed;
 };
 
 // Reusable markdown components configuration
@@ -460,7 +482,7 @@ export const ProfessorMessage = ({ message, isStreaming = false, messageId, sess
       <div className="flex-1 min-w-0 space-y-1 overflow-hidden max-w-full">
         {/* Content area with proper typography */}
         <div className="text-[15px] leading-7 text-chat-text break-words overflow-hidden max-w-full [overflow-wrap:anywhere] professor-message-bubble">
-          {renderContentWithLatex(message.content)}
+          {renderContentWithLatex(preprocessContent(message.content))}
           {isStreaming && (
             <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-blink align-middle" />
           )}
