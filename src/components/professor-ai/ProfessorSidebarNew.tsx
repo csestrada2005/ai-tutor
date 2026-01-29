@@ -411,9 +411,9 @@ export const ProfessorSidebarNew = ({
           <>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                <span className="text-primary font-bold text-xs">AT</span>
+                <span className="text-primary font-bold text-xs">AI</span>
               </div>
-              <span className="font-bold text-primary">AskTETR</span>
+              <span className="font-bold text-primary">ProfessorAI</span>
             </div>
             {!isMobile && (
               <Button

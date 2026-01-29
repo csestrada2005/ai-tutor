@@ -26,7 +26,7 @@ const Full = () => {
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">
-              Thank you for your interest in Ask Tetr! We're working very hard to provide 
+              Thank you for your interest in ProfessorAI! We're working very hard to provide 
               the best learning experience possible, and right now we're at full capacity.
             </p>
             

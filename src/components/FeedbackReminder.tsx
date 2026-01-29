@@ -31,7 +31,7 @@ export const FeedbackReminder = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {isWelcome ? "Welcome to Ask TETR! 🎓" : "Before you go..."}
+            {isWelcome ? "Welcome to ProfessorAI! 🎓" : "Before you go..."}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {isWelcome 

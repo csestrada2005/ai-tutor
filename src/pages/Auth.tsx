@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn, UserPlus, GraduationCap } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Auth = () => {
@@ -40,15 +40,7 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate @tetr.com email domain
-    if (!email.toLowerCase().endsWith('@tetr.com')) {
-      toast({
-        title: "Invalid email domain",
-        description: "Please log in with your @tetr.com account",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Email validation removed for white-label demo
     
     setLoading(true);
 
@@ -79,15 +71,7 @@ const Auth = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate @tetr.com email domain
-    if (!email.toLowerCase().endsWith('@tetr.com')) {
-      toast({
-        title: "Invalid email domain",
-        description: "Please log in with your @tetr.com account",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Email validation removed for white-label demo
     
     setLoading(true);
 
@@ -145,15 +129,7 @@ const Auth = () => {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate @tetr.com email domain
-    if (!email.toLowerCase().endsWith('@tetr.com')) {
-      toast({
-        title: "Invalid email domain",
-        description: "Please use your @tetr.com account",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Email validation removed for white-label demo
     
     setLoading(true);
 
@@ -184,15 +160,7 @@ const Auth = () => {
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate @tetr.com email domain
-    if (!email.toLowerCase().endsWith('@tetr.com')) {
-      toast({
-        title: "Invalid email domain",
-        description: "Please use your @tetr.com account",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Email validation removed for white-label demo
     
     if (newPassword !== confirmPassword) {
       toast({
@@ -247,13 +215,9 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <img 
-              src="/asktetr-logo.png" 
-              alt="Ask TETR Logo" 
-              className="h-16 w-auto"
-            />
+            <GraduationCap className="h-16 w-16 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">Ask TETR</CardTitle>
+          <CardTitle className="text-2xl font-bold">ProfessorAI</CardTitle>
           <CardDescription>
             {isResettingPassword 
               ? "Create a new password" 
@@ -268,7 +232,7 @@ const Auth = () => {
               <div className="space-y-2">
                 <Input
                   type="email"
-                  placeholder="Enter your @tetr.com email"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -310,7 +274,7 @@ const Auth = () => {
               <div className="space-y-2">
                 <Input
                   type="email"
-                  placeholder="Enter your @tetr.com email"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

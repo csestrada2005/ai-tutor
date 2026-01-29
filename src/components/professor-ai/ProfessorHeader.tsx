@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Mode } from "./types";
@@ -101,7 +101,10 @@ export const ProfessorHeader = ({
           </Button>
           
           {/* Logo */}
-          <span className="text-base font-bold text-primary shrink-0">AskTETR</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <GraduationCap className="h-5 w-5 text-primary" />
+            <span className="text-base font-bold text-primary">ProfessorAI</span>
+          </div>
 
           {/* Course selector - takes remaining space */}
           <Button
@@ -150,7 +153,10 @@ export const ProfessorHeader = ({
       {/* Desktop layout - centered selectors */}
       <div className="hidden lg:flex items-center gap-2">
         {/* Logo */}
-        <span className="text-lg font-bold text-primary shrink-0">AskTETR</span>
+        <div className="flex items-center gap-2 shrink-0">
+          <GraduationCap className="h-6 w-6 text-primary" />
+          <span className="text-lg font-bold text-primary">ProfessorAI</span>
+        </div>
 
         {/* Desktop selectors - centered */}
         <div className="flex items-center gap-2 flex-1 justify-center max-w-3xl px-4">
