@@ -1,146 +1,92 @@
 
 
-# Admin Role System Implementation
+# Fix Table Rendering in ProfessorMessage
 
-This plan creates a secure, database-driven admin system to replace the email-based developer detection. You'll be able to grant any user access to all batches (2028 and 2029) by adding them to the admin table.
+## Problem Analysis
 
----
+The AI is streaming tables with multiple rows "glued" together on single lines. Looking at your examples:
 
-## What Changes
-
-| Current Behavior | New Behavior |
-|-----------------|--------------|
-| `@tetr` emails get full access | Removed - no special email handling |
-| No database role table | New `user_roles` table with `admin` role |
-| Developer access hardcoded | Admin access managed via database |
-
----
-
-## Implementation Steps
-
-### Step 1: Create Database Infrastructure
-
-**New database objects:**
-
-- **`app_role` enum**: Defines available roles (initially just `admin`)
-- **`user_roles` table**: Links users to their roles
-- **`has_role()` function**: Secure helper to check if a user has a specific role
-- **RLS policies**: Only admins can view the roles table
-
-### Step 2: Update Frontend Logic
-
-**File: `src/pages/ProfessorAI.tsx`**
-
-Rename `isDeveloper` state to `isAdmin` and update the logic:
-
-1. Remove the `@tetr` email detection entirely
-2. After getting the user, query the `user_roles` table to check for admin status
-3. If the user has the `admin` role, grant full batch access
-
-The new logic will be:
-- Email contains "2028" → Batch 2028 only
-- Email contains "2029" → Batch 2029 only  
-- User has `admin` role in database → Full access to all batches
-- No match → Default to Batch 2029
-
-### Step 3: Update Term Selection UI
-
-**File: `src/components/professor-ai/ProfessorTermSelection.tsx`**
-
-Change the "Developer Access" text to "Admin Access" so it displays correctly for admins.
-
----
-
-## How to Add Admins
-
-After implementation, add your employer as an admin:
-
-**Option A - Via Backend UI:**
-1. Click "View Backend" button below
-2. Navigate to the `user_roles` table
-3. Add a row with the user's `user_id` and role `admin`
-
-**Option B - Via SQL:**
-```sql
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin'
-FROM auth.users
-WHERE email = 'employer@example.com';
+```
+|---|---|---| | 1. Transaction Layer | Digital signatures & ownership chains | Proves who owns what...
 ```
 
----
+The current preprocessing logic has two issues:
 
-## Technical Details
+1. **The generic row fixer is too aggressive** — The regex `(\|)[ \t]+(\|)` matches any pipe-space-pipe pattern, which could incorrectly break content inside table cells
+2. **Missing pattern for row endings** — We need to detect when a complete table row ends (closing `|`) and a new row begins (opening `|`)
 
-### Database Schema
+## Solution
 
-```text
-+------------------+
-|   user_roles     |
-+------------------+
-| id (uuid, PK)    |
-| user_id (uuid)   | --> references auth.users
-| role (app_role)  | --> enum: 'admin'
-| created_at       |
-+------------------+
-```
+Rewrite the `preprocessContent` function with smarter regex patterns that:
+- Detect complete row endings (content followed by `|`) before a new row starts (`| `)
+- Handle the separator-to-data-row transition specifically
+- Avoid breaking content within cells
 
-### Security Model
+## Technical Changes
 
-- RLS enabled: Only users with `admin` role can view the table
-- `has_role()` function uses `SECURITY DEFINER` to safely check roles without RLS recursion
-- No insert/update/delete policies for regular users (only database admins can modify)
+### File: `src/components/professor-ai/ProfessorMessage.tsx`
 
-### Frontend Code Changes (ProfessorAI.tsx)
-
-The batch assignment logic will change from:
+Update the `preprocessContent` function (lines 43-62):
 
 ```typescript
-// OLD - Email-based detection
-if (email.includes("2028")) {
-  batch = "2028";
-} else if (email.includes("2029")) {
-  batch = "2029";
-} else if (email.includes("@tetr")) {
-  isDevUser = true;
-  // ...
-}
+const preprocessContent = (content: string): string => {
+  let processed = content;
+  
+  // Step 1: Fix separator row glued to first data row
+  // Pattern: |---|---|---| | Content | → split after separator
+  // Matches: closing pipe of separator, spaces, opening pipe of data row
+  processed = processed.replace(
+    /(\|[-:\s]+\|)([ \t]+)(\|[^-])/g, 
+    '$1\n$3'
+  );
+  
+  // Step 2: Fix data rows glued together
+  // Pattern: | Value1 | Value2 | | Next1 | Next2 |
+  // Key insight: A row ends with "content |" and new row starts with "| content"
+  // We need to find: | followed by space(s) followed by | followed by non-pipe content
+  // This detects: "| | Next" where the middle part is row boundary
+  processed = processed.replace(
+    /(\|)([ \t]{2,})(\|[ \t]*[^|\-\s])/g,
+    '$1\n$3'
+  );
+  
+  // Step 3: More aggressive fix for remaining glued rows
+  // Look for pattern: text | | text (row ending then row starting)
+  // The double-space after closing pipe indicates row break
+  processed = processed.replace(
+    /([^|\n]\s*\|)([ \t]+)(\|[^|\-\n])/g,
+    '$1\n$3'
+  );
+  
+  // Step 4: Ensure blank line before table starts (for GFM parsing)
+  processed = processed.replace(/([^\n])\n(\|[^\n]+\|)/g, '$1\n\n$2');
+  processed = processed.replace(/(:)\n(\|)/g, '$1\n\n$2');
+  
+  return processed;
+};
 ```
 
-To:
+### Regex Breakdown
 
-```typescript
-// NEW - Database-driven admin check
-if (email.includes("2028")) {
-  batch = "2028";
-} else if (email.includes("2029")) {
-  batch = "2029";
-}
+| Step | Pattern | Purpose |
+|------|---------|---------|
+| 1 | `(\|[-:\s]+\|)([ \t]+)(\|[^-])` | Splits separator `\|---\|` from data row `\| Content` |
+| 2 | `(\|)([ \t]{2,})(\|[ \t]*[^|\-\s])` | Splits rows with 2+ spaces between them |
+| 3 | `([^|\n]\s*\|)([ \t]+)(\|[^|\-\n])` | Catches "content \|  \| next" patterns |
+| 4 | Existing | Ensures blank line before table for GFM |
 
-// Check admin status from database
-const { data: roleData } = await supabase
-  .from('user_roles')
-  .select('role')
-  .eq('user_id', user.id)
-  .eq('role', 'admin')
-  .maybeSingle();
+### Why This Works
 
-if (roleData) {
-  isAdminUser = true;
-  // Use stored batch or default
-  const storedBatch = localStorage.getItem("professorSelectedBatch");
-  batch = storedBatch && ["2028", "2029"].includes(storedBatch) 
-    ? storedBatch : "2029";
-}
-```
+The key insight is that table rows have a specific pattern:
+- **Row end**: `content |` (text followed by closing pipe)
+- **Row start**: `| content` (opening pipe followed by text)
 
----
+When rows are glued, we see: `content | | content` — the two pipes with spaces between them mark the boundary. The new regex looks for this specific pattern rather than any pipe-space-pipe sequence.
 
-## Files to be Modified
+## Testing Strategy
 
-| File | Change |
-|------|--------|
-| Database | Create `app_role` enum, `user_roles` table, `has_role()` function, RLS policies |
-| `src/pages/ProfessorAI.tsx` | Replace `isDeveloper` with `isAdmin`, add database query for admin role |
-| `src/components/professor-ai/ProfessorTermSelection.tsx` | Update "Developer Access" text to "Admin Access" |
+After implementing, test with the exact examples you provided:
+1. Tables with 4 columns where separator is glued to first row
+2. Tables where multiple data rows are on the same line
+3. Normal tables (should not be affected)
 
